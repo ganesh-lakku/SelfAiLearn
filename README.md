@@ -5,24 +5,64 @@ This project implements a Retrieval-Augmented Generation (RAG) pipeline for
 insurance claims, specifically for evaluating two chunking strategies on
 homeowners policy endorsements.
 
-## Quick Start
+---
 
+## 🚀 Getting Started (After Cloning)
+
+Follow these steps on any machine after cloning this repo:
+
+### 1. Clone the repository
 ```bash
-# 1. Activate the virtual environment
-source venv/bin/activate
+git clone https://github.com/ganesh-lakku/SelfAiLearn.git
+cd SelfAiLearn
+```
 
-# 2. Set your Groq API key (for generation only — embeddings are local)
-export GROQ_API_KEY=gsk_...
+### 2. Create and activate a virtual environment
+```bash
+python3 -m venv venv
+source venv/bin/activate        # macOS / Linux
+# venv\Scripts\activate         # Windows
+```
 
-# 3. Run the full pipeline
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Set up your API key
+```bash
+cp .env.example .env
+```
+Open `.env` and replace the placeholder with your real Groq API key:
+```
+GROQ_API_KEY=gsk_your_actual_key_here
+```
+> Get a free key at https://console.groq.com/keys
+
+### 5. Build the vector index
+```bash
+python3 src/ingest.py
+```
+This creates the `chroma_db/` vector store locally (not in git).
+
+### 6. Run the full evaluation pipeline
+```bash
 python3 run_all.py
 ```
+Produces `results.md` with all evaluation evidence.
 
-The pipeline will produce `results.md` with all required evidence.
+### 7. (Optional) Launch the interactive chat
+```bash
+python3 chat.py
+```
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
+├── .env.example                # API key template — copy to .env
+├── .gitignore
 ├── endorsements/               # 6 synthetic homeowners endorsements
 │   ├── HO-0304_03-24.txt      # Water damage + supply line coverage
 │   ├── HO-0305_03-24.txt      # Named storm deductible
@@ -36,22 +76,27 @@ The pipeline will produce `results.md` with all required evidence.
 │   ├── retrieval.py            # Vector search + metadata filter
 │   ├── generation.py           # Groq LLM generation + hard refusal
 │   └── evaluate.py             # 8-question evaluation harness
-├── chroma_db/                  # Persistent vector store (auto-created)
+├── chat.py                     # Interactive CLI chat
 ├── run_all.py                  # Master runner
-├── results.md                  # Auto-generated deliverable
-└── README.md
+└── results.md                  # Auto-generated deliverable
 ```
 
-## Technology Stack
+> **Note:** `chroma_db/`, `venv/`, `.env`, and `__pycache__/` are excluded from git via `.gitignore` and must be created locally.
+
+---
+
+## 🛠 Technology Stack
 
 | Component | Technology |
 |-----------|-----------|
 | LLM (generation) | openai/gpt-oss-120b via Groq API |
 | Embeddings | sentence-transformers/all-MiniLM-L6-v2 (local) |
-| Vector store | ChromaDB (persistent) |
+| Vector store | ChromaDB (persistent, local) |
 | Chunking A | Naive sliding window (400 tokens, 50 overlap) |
 | Chunking B | Structure-aware (splits on clause/section headers) |
-| Python | 3.14 (system venv) |
+| Python | 3.10+ |
+
+---
 
 ## Key Design Decisions
 
