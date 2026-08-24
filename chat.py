@@ -12,8 +12,11 @@ Usage:
 """
 
 import os
-
 import sys
+from dotenv import load_dotenv
+
+# Load .env from the project root (if present) before anything else
+load_dotenv()
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
