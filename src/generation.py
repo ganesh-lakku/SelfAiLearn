@@ -7,7 +7,10 @@ from retrieved chunks. No "use your best judgment" loophole.
 """
 
 import os
+from dotenv import load_dotenv
 from openai import OpenAI
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Groq client (OpenAI-compatible)

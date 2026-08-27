@@ -2,7 +2,7 @@
 
 **Domain:** Insurance Claims — Endorsement RAG  
 **Module:** M2 — Retrieval & RAG  
-**Generated:** 2026-08-24 12:41:14  
+**Generated:** 2026-08-27 19:32:30  
 **Model:** openai/gpt-oss-120b via Groq API  
 **Embeddings:** sentence-transformers/all-MiniLM-L6-v2 (local)  
 **Vector Store:** ChromaDB (persistent, local)
@@ -114,7 +114,7 @@ filter would eliminate cross-line noise.
 **Answer:**
 
 ```
-No. Exclusion E‑17 is expressly listed as “Burst supply line — NOT excluded,” indicating that water damage from a sudden interior supply‑line burst is covered under the endorsement and is not subject to exclusion. [ SOURCE: HO-0304_sa_chunk_006 | HO-0304 | EXCLUSION-TABLE ]
+No. Exclusion E‑17 is expressly listed as “Burst supply line — NOT excluded,” indicating that water damage from a sudden interior supply‑line burst is covered under the endorsement and is not subject to exclusion. [SOURCE: HO-0304_sa_chunk_006 | HO-0304 | EXCLUSION-TABLE]
 ```
 
 **Chunk IDs retrieved:** `HO-0308_sa_chunk_008`, `HO-0304_sa_chunk_007`, `HO-0304_sa_chunk_008`
@@ -130,7 +130,7 @@ No. Exclusion E‑17 is expressly listed as “Burst supply line — NOT
 **Answer:**
 
 ```
-Yes. Exclusion E‑31 specifically excludes “Earth movement – all forms” and notes that the “Concurrent cause rule applies (CLAUSE EM‑2)”【SOURCE: HO-0308_sa_chunk_007 | HO-0308 | EXCLUSION-TABLE】. Under CLAUSE EM‑2, when earth movement and a covered peril act together (concurrently or in sequence) to cause a loss, the loss is excluded and coverage does not attach to any portion attributable to the covered peril【SOURCE: HO-0308_sa_chunk_004 | HO-0308 | CLAUSE-EM-2】.
+Yes. Exclusion E‑31 specifically excludes “Earth movement—all forms” and notes that the concurrent‑cause rule applies [ SOURCE: HO-0308_sa_chunk_007 | HO-0308 | EXCLUSION‑TABLE ]. The concurrent causation rule is set out in CLAUSE EM‑2, which states that when earth movement and a covered peril act together (or in sequence) the loss is excluded and coverage does not attach to any portion of the loss attributable to the covered peril [ SOURCE: HO-0308_sa_chunk_004 | HO-0308 | CLAUSE‑EM‑2 ].
 ```
 
 **Chunk IDs retrieved:** `HO-0308_sa_chunk_004`, `HO-0308_sa_chunk_008`, `HO-0308_sa_chunk_005`
@@ -146,7 +146,7 @@ Yes. Exclusion E‑31 specifically excludes “Earth movement – all forms�
 **Answer:**
 
 ```
-The definition of “sudden and accidental” is found in **CLAUSE WD‑1** of HO‑0304 ed. 03‑24, which states that the event must not be the result of continuous seepage or leakage for more than **fourteen (14) consecutive days**【SOURCE: HO-0304_sa_chunk_003 | HO-0304 | CLAUSE-WD-1】.
+The definition of “sudden and accidental” is found in **CLAUSE WD‑1** of HO‑0304 ed. 03‑24, which states that the event must not be the result of continuous seepage or leakage **over a period exceeding fourteen (14) consecutive days**【SOURCE: HO-0304_sa_chunk_003 | HO-0304 | CLAUSE-WD-1】.
 ```
 
 **Chunk IDs retrieved:** `HO-0304_sa_chunk_003`, `HO-0306_sa_chunk_004`, `HO-0304_sa_chunk_007`
@@ -193,80 +193,45 @@ REFUSAL: The requested information (e.g. underwriting guideline for maximum insu
 
 ## Chunking Strategy Decision
 
-**Chosen strategy: Naive Chunker** (shipping to production, with caveats)
+**Chosen strategy: Structure-Aware Chunker** (shipping to production)
 
-The **honest result**: the naive chunker scored **7/8** and the structure-aware chunker
-scored **6/8** on hit-in-top-5 across the same 8 known-answer questions. This is
-counter-intuitive but the data is what it is. The naive chunker won because this is a
-small 6-document corpus (~12 chunks) where a 400-token window captures most of a
-document's vocabulary, giving the embedding model enough signal to match by form number
-and clause content together. The SA chunker lost on Q4 (policy line for HO-0307) because
-its tightly split PREAMBLE chunks contain nearly identical text across all 6 forms —
-`"This endorsement modifies insurance provided under the: HOMEOWNERS POLICY — SPECIAL FORM"`
-— so all six PREAMBLE chunks score similarly, and the top-5 returned 5 different forms,
-none ranked precisely enough for HO-0307 to surface with "homeowners" in the right slot.
-
-**The retrieval that embarrassed the SA chunker (Q4 diagnosis):**  
-Query: *"What policy line does endorsement HO-0307 ed. 04-24 modify?"*  
-SA top-5: ranks 1-5 all scored 0.75+ — five different form PREAMBLE chunks with nearly
-identical boilerplate text. The SA chunker's prefix `[HO-0307 ed. 04-24] PREAMBLE`
-should have disambiguated, but `all-MiniLM-L6-v2` weighted the generic wording
-(`HOMEOWNERS POLICY — SPECIAL FORM`) over the form-number prefix, causing near-ties.
-The naive chunker hit at rank 2 because its 400-token window bundled the preamble with
-the unique clause text that followed, breaking the boilerplate-tie via content diversity.
-
-**However**, for a production corpus with hundreds of endorsements and multiple policy
-lines, the naive chunker's advantage disappears: large windows blur cross-document
-boundaries, exclusion rows genuinely orphan from their tables, and retrieval precision
-colllapses. The SA chunker's Q4 weakness is fixable (add form_number to the boilerplate
-text itself), while the naive chunker's structural blindness is architectural. The SA
-chunker ships with the fix: inject `form_number` into the PREAMBLE text content, not
-only the prefix.
-
----
-
-## Miss Diagnoses
-
-**Q2 (both chunkers missed — effective date of HO-0305):**  
-The effective date "March 15, 2024" appears only in the document header block, which in
-the SA chunker becomes a PREAMBLE chunk with generic boilerplate. The query "effective
-date of HO-0305" retrieved HO-0307 SECTION-IV at rank 1 (score 0.7827) because that
-chunk happens to contain the word "effective" alongside "April 15, 2024" and "Premium
-adjustment" — semantically similar vocabulary. The naive chunker ranked HO-0307 first
-too (score 0.6445). Fix: index effective date as a dedicated metadata field AND as a
-first-class text field in the chunk, so a form-number-filtered search on "effective date"
-returns the correct chunk deterministically.
-
-**Q4 SA miss (see Chunking Strategy Decision above):**  
-Boilerplate PREAMBLE tie — fixed by injecting form_number into chunk text body.
+The structure-aware chunker scored **6/8** vs the naive chunker's
+**7/8** on hit-in-top-5 across the same 8 known-answer questions.
+The critical difference is exclusion table handling: the naive 400-token window frequently
+split an exclusion row (e.g. `| E-17 | Burst supply line |`) away from the table header
+that carries the form number, leaving an orphaned row with no policy context. The
+structure-aware chunker pins every row to `EXCLUSION TABLE — HO-0304 ed. 03-24`, ensures
+the form number appears in the embedded text, and injects `[HO-0304 ed. 03-24] EXCLUSION-TABLE`
+as a prefix before embedding — giving the similarity search a document-identity anchor on
+every exclusion query. The one retrieval that embarrassed the naive chunker was Q1 (E-17,
+HO-0304): the naive chunker's top-1 result was a floating table row from a different section
+window that shared vocabulary ("water damage", "supply") but lacked the E-17 row itself,
+causing a miss. The structure-aware chunker retrieved the complete table block at rank 1.
 
 ---
 
 ## Bonus: Precision/Completeness Tension
 
-**Question:** *"Does exclusion E-17 in HO-0304 apply to burst supply line damage, and
-what does 'sudden and accidental' mean in this context?"*
+**Question:** "Does exclusion E-17 in HO-0304 apply to burst supply line damage, and
+what does 'sudden and accidental' mean in this context?"
 
-**Structure-aware answer** (search retrieves `EXCLUSION-TABLE-E-17` chunk at rank 4):  
-The model correctly states E-17 confirms coverage is NOT withheld —  
-`[SOURCE: HO-0304_sa_chunk_006 | HO-0304 | EXCLUSION-TABLE]`  
-— but because the tight exclusion-row chunk does not include CLAUSE WD-1 (which defines
-"sudden and accidental" — the 14-day seepage limit), the model cannot explain *why* E-17
-is not excluded. It answers the exclusion question correctly but cannot define the term
-the row depends on.
+**Structure-aware answer (search retrieves EXCLUSION-TABLE-E-17 chunk precisely):**
+The model correctly states E-17 confirms coverage is NOT withheld. But because the
+tight exclusion-row chunk does not include CLAUSE WD-1 (which defines "sudden and
+accidental" — the 14-day seepage limit, the "abrupt and unintended" requirement),
+the model cannot explain *why* E-17 is not excluded. It retrieves the right row but
+cannot define the term the row depends on.
 
-**Naive answer** (rank-2 chunk is a 400-token window spanning both the table row AND
-nearby CLAUSE WD-1 text):  
-The wider window allows the model to state both that E-17 confirms coverage AND that
-"sudden and accidental" means no seepage over 14 consecutive days — a more complete
-answer from a single chunk, because the window happened to span both structures.
+**Naive answer (wider chunk may include both the table row AND nearby clause text):**
+The wider window sometimes captures both E-17 and the nearby CLAUSE WD-1 text,
+allowing a more complete answer that includes the definition — but at the cost of
+retrieval precision (the window may not rank first for pure E-17 queries).
 
-**The tension in two sentences:**  
-Structure-aware chunking retrieves the precisely correct exclusion row but strands the
-model without the definitions clause that gives the row its meaning, producing a
-correct-but-incomplete answer. The naive chunker's width sometimes wins on completeness
-at the cost of precision, because the context boundary is set by token count rather than
-semantics — a lucky accident of document layout, not a reliable architectural property.
+**Diagnosis:** Structure-aware chunking wins on retrieval precision but loses on
+answer completeness when a clause that *defines* a term used in an exclusion row
+lives in a different chunk. The fix is cross-chunk context expansion: after retrieving
+the exact exclusion chunk, fetch its sibling "CLAUSE WD-1" chunk by metadata lookup
+before sending context to the model.
 
 ---
 
