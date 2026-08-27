@@ -1,0 +1,224 @@
+# 🏠 Insurance Claims RAG — Beginner's Guide to the Project
+
+## 🤔 What is this project, in simple words?
+
+Imagine you have **6 insurance policy documents** (called "endorsements").
+A customer comes and asks:
+
+> *"Does my policy cover water damage from a burst pipe?"*
+
+Instead of reading all 6 documents yourself, this project builds an **AI assistant** that:
+1. **Reads and indexes** all 6 documents into a database
+2. **Finds the relevant parts** when you ask a question
+3. **Generates a clear answer** — and if the answer isn't in the documents, it **refuses to guess**
+
+This technique is called **RAG** — **Retrieval-Augmented Generation**.
+
+---
+
+## 🧠 The Big Picture (How it Works — Step by Step)
+
+```
+📄 Insurance Documents (6 .txt files)
+         ↓
+    [STEP 1: INGEST]
+    Read & split into small pieces called "chunks"
+         ↓
+    [STEP 2: EMBED]
+    Convert each chunk into numbers (vectors) that a computer understands
+         ↓
+    [STEP 3: STORE]
+    Save everything in a special database called ChromaDB
+         ↓
+         ─────── Later, when you ask a question ───────
+         ↓
+    [STEP 4: RETRIEVE]
+    Convert your question into numbers too, find the most similar chunks
+         ↓
+    [STEP 5: GENERATE]
+    Send the matching chunks + your question to an AI (Groq LLM)
+         ↓
+    [STEP 6: ANSWER]
+    You get a clear answer with citations — or a refusal if not found
+```
+
+---
+
+## 📁 Project Files — What Does Each One Do?
+
+### `endorsements/` folder — The Raw Documents
+These are the 6 insurance documents the AI learns from:
+- `HO-0304` — Water damage & burst supply line coverage
+- `HO-0305` — Named storm deductible
+- `HO-0306` — Mold and fungi exclusion
+- `HO-0307` — Scheduled personal property
+- `HO-0308` — Earthquake exclusion
+- `HO-0309` — Business pursuits exclusion
+
+> Think of these as textbooks the AI studies.
+
+---
+
+### `src/chunkers.py` — The Document Splitter ✂️
+
+Long documents are too big to process all at once. This file **cuts them into smaller pieces** called "chunks."
+
+There are **two ways** to cut (two strategies):
+
+#### Strategy A — Naive (Dumb) Chunker
+- Cuts the text every **400 words**, with 50-word overlap between pieces
+- It doesn't care about document structure — like tearing pages randomly
+- **Problem:** An exclusion table row might get separated from its header
+
+#### Strategy B — Structure-Aware (Smart) Chunker
+- Reads the document and **finds real section headers** like `SECTION I`, `CLAUSE WD-1`, `EXCLUSION TABLE`
+- Cuts at those boundaries — like cutting at chapter headings
+- **Keeps related information together** (e.g., a table row stays with its header)
+- Also labels each chunk with which form it belongs to (e.g., `[HO-0304 ed. 03-24]`)
+
+> **Analogy:** Strategy A is like randomly tearing a book. Strategy B is like cutting at the chapter headings.
+
+---
+
+### `src/ingest.py` — The Indexer 📚
+
+This file:
+1. Reads all 6 `.txt` endorsement files
+2. Splits each one using **both** chunking strategies
+3. **Converts each chunk into numbers** (using a model called `all-MiniLM-L6-v2` — a free, local AI model)
+4. Saves everything into **ChromaDB** (a special database for AI search)
+
+> **Analogy:** Like creating two card-catalog drawers in a library — one organized randomly, one organized by chapters.
+
+It creates two databases:
+- `endorsements_naive` — chunks from Strategy A
+- `endorsements_structure_aware` — chunks from Strategy B
+
+Each chunk stored also has **metadata tags** like:
+- Which file it came from (`source_file`)
+- Which form number (`HO-0304`, etc.)
+- Which clause or section (`EXCLUSION-TABLE-E-17`)
+
+---
+
+### `src/retrieval.py` — The Search Engine 🔍
+
+When you ask a question, this file:
+1. Converts your question into numbers (using the same AI model)
+2. Searches ChromaDB for the chunks whose numbers are **closest** to your question's numbers
+3. Returns the top 5 most relevant chunks
+
+This is called **vector search** or **semantic search** — it finds meaning, not just keywords.
+
+> **Analogy:** Google finds pages about "car engine" even if you type "automobile motor." Same idea here.
+
+It can also **filter by metadata** — e.g., "only search in HO-0305 documents."
+
+---
+
+### `src/generation.py` — The Answer Maker 🤖
+
+Once relevant chunks are found, this file:
+1. Combines the chunks into a **context block**
+2. Sends your question + the context to a **Large Language Model (LLM)** via the Groq API
+3. The AI is given **strict rules** (a system prompt) that say:
+   - ✅ Answer ONLY from what's in the context
+   - ✅ Cite every fact with a `[SOURCE: chunk_id | form | clause]` reference
+   - 🚫 If the answer isn't in the context → output a REFUSAL message, nothing else
+   - 🚫 No guessing, no "typically...", no general knowledge
+
+> **Why the refusal rule?** In insurance, giving a wrong answer can be a legal problem. It's safer to say "I don't know" than to guess.
+
+---
+
+### `chat.py` — The Interactive Chat Interface 💬
+
+This is the **main program you run**. It:
+1. Shows a welcome banner in the terminal
+2. Checks that your API key is set
+3. Loops forever, asking you for questions
+4. For each question:
+   - Searches the documents (retrieval)
+   - Generates an answer (generation)
+   - Shows you the answer + which document it came from
+5. If you type `quit` or `exit`, it stops
+
+---
+
+### `src/evaluate.py` — The Tester 📊
+Runs 8 pre-made test questions against both chunking strategies to compare which one is better.
+
+### `run_all.py` — The Master Runner 🏃
+Runs everything end-to-end: ingestion, retrieval tests, evaluation — and saves results to `results.md`.
+
+### `chroma_db/` folder — The Database 🗃️
+The actual stored vectors (numbers representing document chunks). Created when you run `ingest.py`.
+
+---
+
+## 🛠️ Technology Stack — What Tools Were Used?
+
+| What it does | Tool Used | Simple Explanation |
+|---|---|---|
+| AI model for answers | Groq API + GPT-OSS-120b | The brain that writes answers |
+| Converting text to numbers | `sentence-transformers/all-MiniLM-L6-v2` | Local AI that understands text meaning |
+| Storing & searching numbers | ChromaDB | A special database for AI searches |
+| Reading API keys safely | `python-dotenv` | Loads secrets from a `.env` file |
+| Counting tokens (words) | `tiktoken` | OpenAI's word counter library |
+| Language | Python 3.10+ | Programming language used |
+
+---
+
+## 🔑 Key Concepts for Beginners
+
+### What is an "Embedding"?
+A way to turn text into a list of numbers. Similar texts get similar numbers. This lets computers compare meaning.
+
+**Example:**
+- "burst pipe" → `[0.12, 0.87, 0.45, ...]`
+- "broken water line" → `[0.11, 0.85, 0.47, ...]`  ← very similar!
+- "earthquake damage" → `[0.91, 0.03, 0.22, ...]`  ← very different!
+
+### What is a "Vector Store" (ChromaDB)?
+A database that stores these number-lists (vectors) and can quickly find the most similar ones to a query.
+
+### What is "RAG" (Retrieval-Augmented Generation)?
+A pattern where an AI **first searches** for relevant documents, **then generates** an answer — instead of just guessing from its training data.
+
+### What is a "Chunk"?
+A small piece of a larger document. Breaking documents into chunks lets the AI find the **specific relevant section**, not the whole document.
+
+---
+
+## 🚀 How to Run It (Step by Step)
+
+```bash
+# 1. Activate the virtual environment
+source venv/bin/activate
+
+# 2. Build the database (only needed once)
+python3 src/ingest.py
+
+# 3. Start the chat!
+python3 chat.py
+
+# Now type questions like:
+# "Does E-17 cover water damage from a burst supply line?"
+# "What is the named storm deductible under HO-0305?"
+```
+
+---
+
+## 🎯 Summary — What This Project Teaches
+
+This is a **Week 3 Practical exercise** for learning AI engineering. It demonstrates:
+
+1. **Document chunking** — two strategies and their tradeoffs
+2. **Vector embeddings** — how to convert text to searchable numbers
+3. **Semantic search** — finding relevant content by meaning, not keywords
+4. **RAG pipelines** — combining search + AI generation
+5. **Grounded generation** — forcing AI to cite sources and refuse to hallucinate
+6. **Metadata filtering** — narrowing searches by document attributes
+7. **Evaluation** — comparing two approaches scientifically
+
+> This is exactly the kind of system used in real-world enterprise AI products like chatbots for legal documents, medical records, or customer support.
