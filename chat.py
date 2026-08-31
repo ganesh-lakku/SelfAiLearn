@@ -2,17 +2,23 @@
 """
 chat.py — Interactive CLI chat for the Insurance Claims RAG app.
 
+[WEEK 4 UPDATE] Now supports hybrid retrieval (BM25 + Vector + RRF) as default.
+This fixes exact-token failures for queries containing exclusion codes (E-17)
+and exact form numbers (HO-0304 ed. 03-24).
+
 Type any question about the endorsements and get a grounded answer.
 The app searches your indexed endorsements and generates a cited response.
 Type 'quit' or 'exit' to stop.
 
 Usage:
     source venv/bin/activate
-    python3 chat.py
+    python3 chat.py                        # uses hybrid search (Week 4 default)
+    python3 chat.py --strategy vector      # uses vector-only search (Week 3)
 """
 
 import os
 import sys
+import argparse
 from dotenv import load_dotenv
 
 # Load .env from the project root (if present) before anything else
@@ -20,8 +26,15 @@ load_dotenv()
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from retrieval import search, format_results
+from retrieval import search as vector_search, format_results
 from generation import generate_answer
+
+# Week 4: import hybrid search (BM25 + Vector + RRF)
+try:
+    from hybrid_retrieval import hybrid_search
+    HYBRID_AVAILABLE = True
+except ImportError:
+    HYBRID_AVAILABLE = False
 
 # ── ANSI colours ────────────────────────────────────────────────────────────
 CYAN   = "\033[96m"
@@ -32,17 +45,18 @@ BOLD   = "\033[1m"
 RESET  = "\033[0m"
 DIM    = "\033[2m"
 
-BANNER = f"""
+BANNER_TEMPLATE = """
 {BOLD}{CYAN}╔══════════════════════════════════════════════════════════════╗
 ║       🏠  Insurance Claims RAG — Endorsement Assistant       ║
-║              Week 3 Practical · Task Set D                   ║
+║              Week 4 Practical · Task Set D                   ║
 ╚══════════════════════════════════════════════════════════════╝{RESET}
 
 {DIM}Indexed endorsements: HO-0304, HO-0305, HO-0306, HO-0307, HO-0308, HO-0309{RESET}
+{DIM}Retrieval strategy : {strategy_label}{RESET}
 {DIM}Type your question below. Type {BOLD}quit{RESET}{DIM} to exit.{RESET}
 
 {YELLOW}Example questions you can ask:{RESET}
-  • Does E-17 cover water damage from a burst supply line?
+  • Does E-17 apply under HO-0304 ed. 03-24? (exact-token query — tests hybrid)
   • What is the named storm deductible under HO-0305?
   • Does HO-0306 exclude mold damage?
   • What does "sudden and accidental" mean under HO-0304?
@@ -53,8 +67,31 @@ BANNER = f"""
 SEPARATOR = f"{DIM}{'─' * 64}{RESET}"
 
 
-def chat_loop():
-    print(BANNER)
+def chat_loop(use_hybrid: bool = True):
+    """
+    Main chat loop.
+
+    Args:
+        use_hybrid: If True, use BM25+Vector+RRF hybrid search (Week 4 default).
+                    If False, use vector-only search (Week 3 behaviour).
+    """
+    # Decide search function and label
+    if use_hybrid and HYBRID_AVAILABLE:
+        search_fn = lambda q, n: hybrid_search(q, n_results=n)
+        strategy_label = f"{BOLD}Hybrid (BM25 + Vector + RRF) — Week 4{RESET}{DIM}"
+    elif use_hybrid and not HYBRID_AVAILABLE:
+        print(f"{YELLOW}⚠  hybrid_retrieval not found — falling back to vector search.{RESET}")
+        search_fn = lambda q, n: vector_search(q, strategy="structure_aware", n_results=n)
+        strategy_label = "vector-only (structure_aware) — fallback"
+    else:
+        search_fn = lambda q, n: vector_search(q, strategy="structure_aware", n_results=n)
+        strategy_label = "vector-only (structure_aware) — Week 3"
+
+    banner = BANNER_TEMPLATE.format(
+        BOLD=BOLD, CYAN=CYAN, RESET=RESET, DIM=DIM, YELLOW=YELLOW,
+        strategy_label=strategy_label,
+    )
+    print(banner)
 
     # Check API key
     api_key = os.environ.get("GROQ_API_KEY", "")
@@ -86,7 +123,10 @@ def chat_loop():
         # ── Retrieval ──────────────────────────────────────────────────
         print(f"\n{DIM}🔍 Searching endorsements...{RESET}", end="", flush=True)
         try:
-            hits = search(question, strategy="structure_aware", n_results=5)
+            # Fetch 7 chunks so rank-4/5 exclusion-table chunks reach the LLM
+            # (PREAMBLE anchored-text prefixes cause vector similarity inflation
+            # that pushes the actual answer chunk to rank 4 in hybrid mode)
+            hits = search_fn(question, 7)
         except Exception as e:
             print(f"\n{RED}Retrieval error: {e}{RESET}")
             continue
@@ -137,4 +177,13 @@ def chat_loop():
 
 
 if __name__ == "__main__":
-    chat_loop()
+    # Week 4: parse --strategy flag
+    parser = argparse.ArgumentParser(description="Insurance Claims RAG Chat")
+    parser.add_argument(
+        "--strategy",
+        choices=["hybrid", "vector"],
+        default="hybrid",
+        help="Retrieval strategy: 'hybrid' (BM25+RRF, Week 4 default) or 'vector' (Week 3)",
+    )
+    args = parser.parse_args()
+    chat_loop(use_hybrid=(args.strategy == "hybrid"))
