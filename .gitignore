@@ -33,3 +33,13 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Week 5 — trace file is PII-safe (redacted before write) and IS committed.
+# The file below is NOT gitignored — it should be tracked as evidence.
+# traces.jsonl  ← intentionally tracked
+
+# Week 5 generated artifacts that are auto-rebuilt — tracked for submission
+# week5/replay_evidence.md  ← tracked
+# week5/sampled_trace_ids.json  ← tracked
+# week5/notes.md  ← tracked (human fills in observations)
+# week5/taxonomy.md  ← tracked (human fills in modes)

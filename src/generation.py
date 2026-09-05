@@ -4,11 +4,19 @@ generation.py — RAG generation and hard refusal logic.
 Uses Groq API (OpenAI-compatible) with model openai/gpt-oss-120b.
 The grounding prompt FORCES refusal when the answer cannot be sourced
 from retrieved chunks. No "use your best judgment" loophole.
+
+Week 5 addition: every generate_answer() call writes a complete, replayable
+trace to traces.jsonl via src/tracer.py.
 """
 
 import os
+import sys
 from dotenv import load_dotenv
 from openai import OpenAI
+
+# Make tracer importable whether this module is run from src/ or project root.
+sys.path.insert(0, os.path.dirname(__file__))
+from tracer import write_trace, PROMPT_VERSION
 
 load_dotenv()
 
@@ -20,17 +28,22 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 MODEL = "openai/gpt-oss-120b"
 
+# Model params — captured in every trace so the call is fully replayable.
+MODEL_PARAMS = {"temperature": 0.0, "max_tokens": 800}
+
+
 def get_client() -> OpenAI:
     if not GROQ_API_KEY:
         raise ValueError(
             "GROQ_API_KEY environment variable is not set. "
             "Export it before running: export GROQ_API_KEY=gsk_..."
         )
-    return OpenAI(api_key=GROQ_API_KEY, base_url=GROQ_BASE_URL)
+    return OpenAI(api_key=GROQ_API_KEY, base_url=GROQ_BASE_URL, timeout=60.0)
 
 
 # ---------------------------------------------------------------------------
 # Grounding system prompt — HARD refusal, no hallucination escape hatch
+# Version: PROMPT_VERSION (imported from tracer.py — bump when you edit this)
 # ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT = """You are an insurance claims assistant that answers questions
@@ -83,17 +96,20 @@ def generate_answer(
     question: str,
     hits: list[dict],
     verbose: bool = True,
+    golden_id: int | None = None,
 ) -> dict:
     """
     Generate a grounded answer (or hard refusal) from retrieved chunks.
+    Writes a complete, replayable trace to traces.jsonl.
 
     Args:
-        question: The user's question.
-        hits:     List of retrieved chunk dicts from retrieval.search().
-        verbose:  If True, print the question and answer.
+        question:  The user's question.
+        hits:      List of retrieved chunk dicts from retrieval.search().
+        verbose:   If True, print the question and answer.
+        golden_id: Optional golden-set question id (for eval runs).
 
     Returns:
-        dict with keys: question, answer, used_hits (chunk_ids in answer).
+        dict with keys: question, answer, is_refusal, hits_used, trace_id.
     """
     client = get_client()
     context = format_context(hits)
@@ -112,21 +128,37 @@ def generate_answer(
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
         ],
-        temperature=0.0,
-        max_tokens=800,
+        **MODEL_PARAMS,
     )
 
     answer = response.choices[0].message.content.strip()
+    is_refusal = answer.startswith("REFUSAL:")
+
+    # ------------------------------------------------------------------
+    # Write trace — ALL fields required for replayability, PII redacted
+    # before write inside write_trace().
+    # ------------------------------------------------------------------
+    trace_id = write_trace(
+        question=question,
+        retrieved_chunks=hits,
+        model=MODEL,
+        model_params=MODEL_PARAMS,
+        raw_output=answer,
+        is_refusal=is_refusal,
+        golden_id=golden_id,
+    )
 
     if verbose:
         print(f"\nQ: {question}")
-        print(f"A: {answer}\n")
+        print(f"A: {answer}")
+        print(f"   [trace_id: {trace_id}]\n")
 
     return {
-        "question": question,
-        "answer": answer,
-        "is_refusal": answer.startswith("REFUSAL:"),
-        "hits_used": [h["chunk_id"] for h in hits],
+        "question":   question,
+        "answer":     answer,
+        "is_refusal": is_refusal,
+        "hits_used":  [h["chunk_id"] for h in hits],
+        "trace_id":   trace_id,
     }
 
 
@@ -145,9 +177,9 @@ def run_answerable_questions(
     Each question dict: {question, expected_form, expected_clause}
     """
     results = []
-    for q in questions:
+    for i, q in enumerate(questions):
         hits = search_fn(q["question"], strategy="structure_aware", n_results=n_results)
-        gen = generate_answer(q["question"], hits, verbose=verbose)
+        gen = generate_answer(q["question"], hits, verbose=verbose, golden_id=i + 1)
         gen["expected_form"] = q.get("expected_form", "")
         gen["expected_clause"] = q.get("expected_clause", "")
         results.append(gen)

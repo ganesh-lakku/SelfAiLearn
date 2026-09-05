@@ -1,0 +1,27 @@
+{
+  "seed": 42,
+  "sample_size": 20,
+  "total_corpus": 40,
+  "sampled_trace_ids": [
+    "f3593ac6-6b44-48cf-8c63-b93f79d37c4e",
+    "d0ea10da-b22c-428f-bd64-20c80bbea64f",
+    "00759229-8fad-41da-9e70-51c509c2d070",
+    "a5a423a8-cfde-4ae3-ac4e-ec6e4ed03ff5",
+    "a52a3f6a-66c0-4b4a-bfaa-eba211063066",
+    "e72c7899-3e15-49c9-97a8-8a862518b382",
+    "eac786c4-b6e3-482c-af2f-6e9476746bde",
+    "b3ffd6f1-4766-43bb-88e5-d42789a5f6eb",
+    "54cd6070-8fa5-4511-8d46-51f05605e841",
+    "6c668224-9908-411b-a399-b635a47ab7c5",
+    "834c39c2-a0a8-4b82-9925-d760f9e045fc",
+    "173988e5-a8ba-4756-8c5a-06c821275dd6",
+    "722e6982-f4bb-4982-a7bf-5d2bbaa11237",
+    "df85bab6-e848-45eb-898e-b18a1fb4ce04",
+    "aa6c9c68-6eb1-4579-8eeb-ebaaa4e5cc1e",
+    "d923fc89-4747-4084-8b50-26625d18daea",
+    "1d67132f-5d28-4d60-a7a5-7220c2259d7c",
+    "f6a83ee4-afe3-4edb-b783-5628a0e08e15",
+    "a4aeddb6-b266-4dad-96c9-520f212e234a",
+    "047a227c-8927-4677-8bf5-cdcbaa894e61"
+  ]
+}
