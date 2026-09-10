@@ -1,0 +1,127 @@
+[
+  {
+    "id": 1,
+    "human_label": "PASS",
+    "notes": "Burst supply line, coverage confirmed, $1,500 deductible — all supported by notes. No invented facts."
+  },
+  {
+    "id": 2,
+    "human_label": "FAIL",
+    "notes": "Summary says 'Date of Loss: Unknown' — notes do not state a date, but summary invented 'continuous seepage confirmed' as an independent claim and omitted the date context correctly. More importantly: summary mentions $2,000 deductible amount in the denied claim context — notes say deductible 'would have been' $2,000 so this is borderline acceptable. FAIL because date field shows Unknown despite notes being silent, and the summary paraphrases denial correctly but adds a coverage decision nuance not stated."
+  },
+  {
+    "id": 3,
+    "human_label": "PASS",
+    "notes": "Named Storm deductible computed correctly ($7,000 > $5,000). Coverage A $350,000, 2% = $7,000. All figures match notes. PENDING status matches notes saying 'recommends coverage confirmation pending final estimate.'"
+  },
+  {
+    "id": 4,
+    "human_label": "PASS",
+    "notes": "Mold remediation covered, HO-0306 MF-2, $1,000 deductible. All facts traceable to notes."
+  },
+  {
+    "id": 5,
+    "human_label": "PASS",
+    "notes": "Mold from humidity, E-22 exclusion cited, denial confirmed. Notes mention 'Date of loss: 22 Jul 2024' but summary shows 'Not specified' — omission is acceptable per rule 4."
+  },
+  {
+    "id": 6,
+    "human_label": "PASS",
+    "notes": "Air quality testing denied per MF-3, $1,200 deductible mentioned for remediation portion. Faithful to notes."
+  },
+  {
+    "id": 7,
+    "human_label": "PASS",
+    "notes": "Earthquake excluded under CLAUSE EM-1, E-31, denial confirmed. Notes say 'no deductible applicable on denied claim' and summary shows 'N/A' for deductible — correct."
+  },
+  {
+    "id": 8,
+    "human_label": "PASS",
+    "notes": "Sinkhole, E-33, denial. Summary accurate and faithful."
+  },
+  {
+    "id": 9,
+    "human_label": "PASS",
+    "notes": "Concurrent causation CLAUSE EM-2, E-31, denial. Summary accurately reflects notes about concurrent cause rule."
+  },
+  {
+    "id": 10,
+    "human_label": "PASS",
+    "notes": "Business pursuits E-19, HO-0309. Denial correct. Date shows N/A — notes say '20 Oct 2024' but omission acceptable."
+  },
+  {
+    "id": 11,
+    "human_label": "FAIL",
+    "notes": "Summary says 'Exclusion(s) Cited: E-19, BP-3' but notes describe CLAUSE BP-3 as the rule, not an exclusion code. Notes say 'BP-3' is a clause, not an E-NN code. Summary treats CLAUSE BP-3 as an exclusion citation — this is an invented exclusion code format. Also date of loss not provided and summary shows N/A — acceptable omission."
+  },
+  {
+    "id": 12,
+    "human_label": "PASS",
+    "notes": "Scheduled jewelry, mysterious disappearance covered, $2,500 deductible. Summary faithful. Date shown N/A — notes say '18 Nov 2024', acceptable omission."
+  },
+  {
+    "id": 13,
+    "human_label": "FAIL",
+    "notes": "Summary says 'Policy Form: HO-0304 ed 03-24 E-17' — this incorrectly formats E-17 as part of the policy form name, which is not how the notes present it. Notes say E-17 is an exclusion code confirming coverage, not part of the form name. Minor but this is invented formatting that could mislead adjuster."
+  },
+  {
+    "id": 14,
+    "human_label": "PASS",
+    "notes": "Named Storm Brenda-2025, $5,600 deductible (2% of $280,000 = $5,600 > $5,000), all from notes. Standard deductible superseded. Faithful."
+  },
+  {
+    "id": 15,
+    "human_label": "PASS",
+    "notes": "Washing machine hose, sudden and accidental, CLAUSE WD-1, 14-day limit cited correctly from notes, $1,500 deductible. All supported. Date N/A — acceptable."
+  },
+  {
+    "id": 16,
+    "human_label": "PASS",
+    "notes": "Mold remediation covered, air quality testing denied under MF-3, $2,000 deductible, $6,200 estimate. All in notes. Faithful."
+  },
+  {
+    "id": 17,
+    "human_label": "PASS",
+    "notes": "Land subsidence, E-34, HO-0308, denial. Summary slightly miswords 'exclusion E-34 covers land subsidence' as if it provides coverage — but in context the denial is clear. Readable as faithful. PASS."
+  },
+  {
+    "id": 18,
+    "human_label": "PASS",
+    "notes": "Airbnb, E-36 and E-19, denial. Both exclusion codes in notes. Faithful."
+  },
+  {
+    "id": 19,
+    "human_label": "FAIL",
+    "notes": "Summary says 'per exclusion code E-17' — notes say E-17 CONFIRMS coverage, it is not the exclusion applied against the claim. E-17 is cited as a positive coverage confirmation, not an exclusion code. Summary frames E-17 as an 'exclusion code' applied, which inverts its meaning slightly and could mislead. Date shows Unknown though notes give 22 Apr 2025."
+  },
+  {
+    "id": 20,
+    "human_label": "PASS",
+    "notes": "Unscheduled necklace, E-28, HO-0307, denial. All facts from notes. Faithful."
+  },
+  {
+    "id": 21,
+    "human_label": "PASS",
+    "notes": "Freelance designer, E-19, business pursuits, denial. Summary faithful to notes."
+  },
+  {
+    "id": 22,
+    "human_label": "PASS",
+    "notes": "Clara-2025, $8,400 deductible (2% of $420,000), $31,000 damage, coverage confirmed. All from notes. Faithful."
+  },
+  {
+    "id": 23,
+    "human_label": "PASS",
+    "notes": "Hot water heater PRV, sudden and accidental, HO-0304, $1,000 deductible. All from notes. Date N/A acceptable."
+  },
+  {
+    "id": 24,
+    "human_label": "PASS",
+    "notes": "Regression case. Summary correctly states E-17 confirms coverage NOT withheld. Notes explicitly state this. Coverage COVERED with $1,500 deductible — all supported. Regression pass is correct."
+  },
+  {
+    "id": 25,
+    "human_label": "PASS",
+    "notes": "Regression case. Summary correctly states E-18 does not appear in HO-0304, table only lists E-11 through E-17. PENDING status and $500 deductible from notes. All facts supported."
+  }
+]

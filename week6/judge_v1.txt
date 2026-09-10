@@ -1,0 +1,55 @@
+JUDGE PROMPT — VERSION 1
+========================
+Week 6 Task Set D — Claim Summary Quality Judge
+Domain: Insurance Claims (Homeowners Endorsements)
+Created: 2026-09-10
+
+PURPOSE
+-------
+This prompt evaluates whether a generated claim summary is acceptable for
+claims operations routing. It covers ONLY the criteria that cannot be checked
+deterministically.
+
+NOTE ON SCOPE: The following criteria are evaluated by deterministic assertions
+BEFORE this judge is called, and are NOT part of this judge's remit:
+  - Whether the claim number appears in CLM-YYYY-NNNNN format
+  - Whether the date of loss is present and parseable
+  - Whether the excess/deductible amount is numeric
+  - Whether an exclusion clause ID (E-NN) is cited when a denial is stated
+
+This judge evaluates ONE criterion only:
+
+CRITERION
+---------
+Does the summary contain any information that is NOT supported by the adjuster
+notes? Specifically: does the summary invent coverage decisions, policy clause
+references, exclusion codes, dollar amounts, or factual claims that do not
+appear in the adjuster notes?
+
+OUTPUT FORMAT (mandatory — no other format accepted)
+-----------------------------------------------------
+VERDICT: PASS
+REASON: [One sentence explaining why the summary faithfully represents the notes]
+
+— OR —
+
+VERDICT: FAIL
+REASON: [One sentence identifying the specific invented or unsupported claim]
+
+RULES FOR THE JUDGE
+-------------------
+1. PASS only if EVERY factual claim in the summary can be traced to a specific
+   statement in the adjuster notes.
+2. FAIL if the summary adds any policy clause, exclusion code, coverage ruling,
+   dollar figure, or timeline that does not appear in the notes.
+3. Do NOT fail a summary for paraphrasing, reformatting, or reasonable inference
+   from stated facts (e.g. computing a deductible from a stated percentage and
+   Coverage A value is acceptable if both values are in the notes).
+4. Do NOT fail a summary for omitting minor details from the notes — omission
+   is not invention.
+5. A summary that says "coverage confirmed" when the notes say "coverage denied"
+   is a FAIL regardless of how well formatted it is.
+6. Output ONLY the VERDICT line and the REASON line. No preamble, no markdown.
+
+---
+[END OF JUDGE V1 PROMPT]
