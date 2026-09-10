@@ -1,0 +1,14 @@
+PREDICTION (written 2026-09-10, before judge v2 iteration)
+==========================================================
+
+The judge v1 fails on cases where the summary faithfully paraphrases or
+reformats adjuster notes (e.g., citing a policy clause as part of a form
+name, or referencing E-17 as an "exclusion code" when it is a coverage
+confirmation) — I predict that adding two few-shot examples showing these
+borderline-accurate summaries labelled PASS will reduce false-FAIL verdicts
+and move agreement from roughly 75-80% up to 88-92%.
+
+WHERE I EXPECT TO BE WRONG: The judge may still struggle with cases where the
+summary uses an exclusion code in an atypical context (E-17 as coverage
+confirmation rather than denial), because the few-shot examples cannot cover
+every reformatting pattern — those edge cases may stay misclassified in v2.
