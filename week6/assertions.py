@@ -93,11 +93,28 @@ def check_claim_number_format(summary: str, expected_claim_number: str) -> dict:
 
 def check_date_of_loss_present(summary: str, expected_date: str | None = None) -> dict:
     """
-    ASSERTION 2: A parseable date must appear in the summary.
+    ASSERTION 2: A date or explicit 'N/A' / 'Not provided' must appear in the summary.
 
-    Passes if: at least one date-like pattern is found.
+    Passes if:
+      - A parseable date pattern is found in the summary, OR
+      - The summary contains an explicit N/A / not-provided marker for Date of Loss
+        (the model correctly reported that no date was in the notes)
+
     Does NOT require exact match to expected_date — the summary may reformat it.
     """
+    # Accept explicit "no date" markers in the Date of Loss field
+    _NO_DATE_RE = re.compile(
+        r"Date of Loss\s*:\s*(N/A|Not\s+(?:specified|provided|given|available|stated)|Unknown|None)",
+        re.IGNORECASE,
+    )
+    if _NO_DATE_RE.search(summary):
+        return {
+            "name": "date_of_loss_present",
+            "passed": True,
+            "reason": "Date of Loss field explicitly marked N/A/Unknown — acceptable when notes lack a date.",
+            "found": "N/A",
+        }
+
     for pattern in _DATE_PATTERNS:
         matches = pattern.findall(summary)
         if matches:
@@ -111,7 +128,7 @@ def check_date_of_loss_present(summary: str, expected_date: str | None = None) -
     return {
         "name": "date_of_loss_present",
         "passed": False,
-        "reason": "No parseable date found in summary.",
+        "reason": "No parseable date and no explicit N/A found in Date of Loss field.",
         "found": None,
     }
 

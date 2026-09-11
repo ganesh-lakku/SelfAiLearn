@@ -55,6 +55,21 @@ DIM    = "\033[2m"
 RESET  = "\033[0m"
 
 LABELS_PATH   = os.path.join(WEEK6_DIR, "labels_25.json")
+JUDGE_RESULTS_PATH = os.path.join(WEEK6_DIR, "judge_results.json")
+
+
+def load_precomputed_results() -> tuple[list, dict, list, dict]:
+    """Load v1 and v2 judge results from judge_results.json."""
+    with open(JUDGE_RESULTS_PATH) as f:
+        r = json.load(f)
+    return (
+        r.get("v1_results", []),
+        r.get("v1_agreement", {}),
+        r.get("v2_results", []),
+        r.get("v2_agreement", {}),
+    )
+
+
 RESULTS_PATH  = os.path.join(WEEK6_DIR, "results_w6.md")
 PREDICT_PATH  = os.path.join(WEEK6_DIR, "prediction.txt")
 
@@ -399,6 +414,11 @@ def main():
         action="store_true",
         help="Skip LLM judge (assertions only). Useful for offline testing.",
     )
+    parser.add_argument(
+        "--load-results",
+        action="store_true",
+        help="Load pre-computed judge results from judge_results.json (skip LLM calls).",
+    )
     args = parser.parse_args()
 
     banner("Week 6 — Claim Summary Judge Validation")
@@ -443,51 +463,63 @@ def main():
         print_criteria_split()
         return
 
-    # ── Step 5: Run judge v1 ──────────────────────────────────────────────────
-    print(f"\n{BOLD}[5/7] Running LLM judge v1...{RESET}")
-    v1_results = run_judge("v1", verbose=True)
-    v1_agreement = compute_agreement(v1_results, labels, "v1", verbose=True)
-
-    # ── Step 6: Run judge v2 (if it exists) ──────────────────────────────────
-    v2_results = None
-    v2_agreement = None
-    print(f"\n{BOLD}[6/7] Running LLM judge v2...{RESET}")
-    if not os.path.exists(JUDGE_V2_PATH):
-        print(f"  {YELLOW}⚠️  judge_v2.txt not found.{RESET}")
-        print(f"     1. Review disagreements above")
-        print(f"     2. Write prediction.txt")
-        print(f"     3. Add 2 disagreements as few-shot examples to create judge_v2.txt")
-        print(f"     4. Re-run: python3 week6/run_week6.py")
+    # ── Step 5: Load or run judge v1 ─────────────────────────────────────────
+    if args.load_results and os.path.exists(JUDGE_RESULTS_PATH):
+        print(f"\n{BOLD}[5/7] Loading pre-computed judge results from judge_results.json...{RESET}")
+        v1_results, v1_agreement, v2_results, v2_agreement = load_precomputed_results()
+        print(f"  ✅ Loaded: v1 agreement={v1_agreement.get('agreement_pct')}%, "
+              f"v2 agreement={v2_agreement.get('agreement_pct') if v2_agreement else 'N/A'}%")
+        skip_to_report = True
     else:
-        v2_results = run_judge("v2", verbose=True)
-        v2_agreement = compute_agreement(v2_results, labels, "v2", verbose=True)
+        skip_to_report = False
 
+    # ── Step 5: Run judge v1 ──────────────────────────────────────────────────
+    if not skip_to_report:
+        print(f"\n{BOLD}[5/7] Running LLM judge v1...{RESET}")
+        v1_results = run_judge("v1", verbose=True)
+        v1_agreement = compute_agreement(v1_results, labels, "v1", verbose=True)
+
+        # ── Step 6: Run judge v2 (if it exists) ──────────────────────────────────
+        v2_results = None
+        v2_agreement = None
+        print(f"\n{BOLD}[6/7] Running LLM judge v2...{RESET}")
+        if not os.path.exists(JUDGE_V2_PATH):
+            print(f"  {YELLOW}⚠️  judge_v2.txt not found.{RESET}")
+        else:
+            v2_results = run_judge("v2", verbose=True)
+            v2_agreement = compute_agreement(v2_results, labels, "v2", verbose=True)
+    else:
+        print(f"\n{BOLD}[5-6/7] Skipped (using pre-computed results).{RESET}")
+
+    if v1_agreement and v2_agreement:
         print(f"\n{BOLD}{CYAN}{'═'*65}{RESET}")
         print(f"{BOLD}{CYAN}  Agreement Before → After{RESET}")
         print(f"{BOLD}{CYAN}{'═'*65}{RESET}")
-        print(f"  agreement_before (v1): {BOLD}{v1_agreement['agreement_pct']}%{RESET}")
-        print(f"  agreement_after  (v2): {BOLD}{v2_agreement['agreement_pct']}%{RESET}")
-        delta = v2_agreement["agreement_pct"] - v1_agreement["agreement_pct"]
+        print(f"  agreement_before (v1): {BOLD}{v1_agreement.get('agreement_pct')}%{RESET}")
+        print(f"  agreement_after  (v2): {BOLD}{v2_agreement.get('agreement_pct')}%{RESET}")
+        delta = v2_agreement.get("agreement_pct",0) - v1_agreement.get("agreement_pct",0)
         arrow = f"{GREEN}▲{RESET}" if delta > 0 else f"{RED}▼{RESET}" if delta < 0 else "─"
         print(f"  Delta:                 {arrow} {abs(delta):.1f}pp")
 
     # ── Step 7: Print mode table + write results ──────────────────────────────
     print(f"\n{BOLD}[7/7] Building results...{RESET}")
-    mode_rows_v1 = build_mode_table(cases, assertion_results, v1_results)
+    v1_results_for_table = v1_results if v1_results else []
+    mode_rows_v1 = build_mode_table(cases, assertion_results, v1_results_for_table)
     print_mode_table(mode_rows_v1, "v1")
     print_criteria_split()
 
     # Disagreement analysis
-    if v1_agreement.get("disagreements"):
+    if v1_agreement and v1_agreement.get("disagreements"):
         print_disagreement_analysis(v1_agreement["disagreements"], cases)
 
-    # Save judge results
-    save_judge_results(v1_results, v2_results, v1_agreement, v2_agreement)
+    # Save judge results (only if we ran the judge live)
+    if not skip_to_report:
+        save_judge_results(v1_results, v2_results, v1_agreement, v2_agreement)
 
     # Write results.md
     results_md = build_results_md(
         cases, summaries, assertion_results,
-        v1_results, v1_agreement,
+        v1_results_for_table, v1_agreement or {},
         v2_results, v2_agreement,
         mode_rows_v1,
     )

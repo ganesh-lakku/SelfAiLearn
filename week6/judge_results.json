@@ -1,0 +1,496 @@
+{
+  "generated_at": "2026-09-11T12:22:01.765807",
+  "judge_model": "openai/gpt-oss-20b",
+  "v1_results": [
+    {
+      "case_id": 1,
+      "verdict": "FAIL",
+      "reason": "The summary adds a coverage decision (\u201cCOVERED\u201d) that is not stated in the adjuster notes.",
+      "raw": "VERDICT: FAIL  \nREASON: The summary adds a coverage decision (\u201cCOVERED\u201d) that is not stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 2,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 3,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and figures stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and figures stated in the adjuster notes.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 4,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and coverage details stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and coverage details stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 5,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 6,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 7,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 8,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 9,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and rulings stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and rulings stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 10,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 11,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 12,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 13,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 14,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes without adding unsupported claims.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes without adding unsupported claims.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 15,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and coverage details stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and coverage details stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 16,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS\nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 17,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 18,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and decisions stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 19,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 20,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 21,
+      "verdict": "FAIL",
+      "reason": "The summary invents a claim number (CLM-2025-10021) that does not appear in the adjuster notes.",
+      "raw": "VERDICT: FAIL  \nREASON: The summary invents a claim number (CLM-2025-10021) that does not appear in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 22,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes without adding unsupported claims.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes without adding unsupported claims.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 23,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 24,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects the adjuster notes, stating the burst supply line coverage, policy edition, E\u201117 exclusion, and $1,500 deductible.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects the adjuster notes, stating the burst supply line coverage, policy edition, E\u201117 exclusion, and $1,500 deductible.",
+      "mode": "regression",
+      "is_regression": true
+    },
+    {
+      "case_id": 25,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects the adjuster notes without adding unsupported information.",
+      "raw": "VERDICT: PASS\nREASON: The summary accurately reflects the adjuster notes without adding unsupported information.",
+      "mode": "regression",
+      "is_regression": true
+    }
+  ],
+  "v1_agreement": {
+    "version": "v1",
+    "agreement_pct": 76.0,
+    "matches": 19,
+    "total": 25,
+    "disagreements": [
+      {
+        "case_id": 1,
+        "human_label": "PASS",
+        "judge_verdict": "FAIL",
+        "mode": "notes-summarisation",
+        "reason": "The summary adds a coverage decision (\u201cCOVERED\u201d) that is not stated in the adjuster notes."
+      },
+      {
+        "case_id": 2,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "exclusion-citation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes."
+      },
+      {
+        "case_id": 11,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "notes-summarisation",
+        "reason": "The summary accurately reflects all facts and decisions stated in the adjuster notes."
+      },
+      {
+        "case_id": 13,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "coverage-confirmation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes."
+      },
+      {
+        "case_id": 19,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "coverage-confirmation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes."
+      },
+      {
+        "case_id": 21,
+        "human_label": "PASS",
+        "judge_verdict": "FAIL",
+        "mode": "notes-summarisation",
+        "reason": "The summary invents a claim number (CLM-2025-10021) that does not appear in the adjuster notes."
+      }
+    ]
+  },
+  "v2_results": [
+    {
+      "case_id": 1,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts in the adjuster notes, and the coverage decision is inferred from qualifying facts.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts in the adjuster notes, and the coverage decision is inferred from qualifying facts.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 2,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes with no invented information.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes with no invented information.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 3,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 4,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 5,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 6,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 7,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 8,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 9,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and coverage ruling stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and coverage ruling stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 10,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 11,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 12,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects the adjuster notes including the scheduled jewelry coverage.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects the adjuster notes including the scheduled jewelry coverage.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 13,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes with no invented information.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes with no invented information.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 14,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 15,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 16,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 17,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 18,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts and exclusions stated in the adjuster notes.",
+      "mode": "exclusion-citation",
+      "is_regression": false
+    },
+    {
+      "case_id": 19,
+      "verdict": "FAIL",
+      "reason": "The summary incorrectly cites E-17 as an exclusion code, whereas the notes say E-17 confirms coverage is NOT withheld.",
+      "raw": "VERDICT: FAIL  \nREASON: The summary incorrectly cites E-17 as an exclusion code, whereas the notes say E-17 confirms coverage is NOT withheld.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 20,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 21,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "notes-summarisation",
+      "is_regression": false
+    },
+    {
+      "case_id": 22,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts in the adjuster notes and includes correct deductible computation.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts in the adjuster notes and includes correct deductible computation.",
+      "mode": "excess-deductible",
+      "is_regression": false
+    },
+    {
+      "case_id": 23,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "coverage-confirmation",
+      "is_regression": false
+    },
+    {
+      "case_id": 24,
+      "verdict": "FAIL",
+      "reason": "The summary claims Exclusion(s) Cited: N/A even though the notes explicitly reference E-17 confirming coverage.",
+      "raw": "VERDICT: FAIL  \nREASON: The summary claims Exclusion(s) Cited: N/A even though the notes explicitly reference E-17 confirming coverage.",
+      "mode": "regression",
+      "is_regression": true
+    },
+    {
+      "case_id": 25,
+      "verdict": "PASS",
+      "reason": "The summary accurately reflects all facts stated in the adjuster notes.",
+      "raw": "VERDICT: PASS  \nREASON: The summary accurately reflects all facts stated in the adjuster notes.",
+      "mode": "regression",
+      "is_regression": true
+    }
+  ],
+  "v2_agreement": {
+    "version": "v2",
+    "agreement_pct": 84.0,
+    "matches": 21,
+    "total": 25,
+    "disagreements": [
+      {
+        "case_id": 2,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "exclusion-citation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes with no invented information."
+      },
+      {
+        "case_id": 11,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "notes-summarisation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes."
+      },
+      {
+        "case_id": 13,
+        "human_label": "FAIL",
+        "judge_verdict": "PASS",
+        "mode": "coverage-confirmation",
+        "reason": "The summary accurately reflects all facts stated in the adjuster notes with no invented information."
+      },
+      {
+        "case_id": 24,
+        "human_label": "PASS",
+        "judge_verdict": "FAIL",
+        "mode": "regression",
+        "reason": "The summary claims Exclusion(s) Cited: N/A even though the notes explicitly reference E-17 confirming coverage."
+      }
+    ]
+  },
+  "agreement_before": 76.0,
+  "agreement_after": 84.0
+}
