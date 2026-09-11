@@ -1,0 +1,143 @@
+JUDGE PROMPT — VERSION 2
+========================
+Week 6 Task Set D — Claim Summary Quality Judge
+Domain: Insurance Claims (Homeowners Endorsements)
+Created: 2026-09-10
+Iterated: 2026-09-11 (v1→v2)
+
+WHAT CHANGED FROM V1: Two few-shot examples were added (both from ACTUAL
+judge v1 disagreements with the human labeller). The examples teach the
+judge two lessons it consistently got wrong:
+  1. A summary can state a coverage decision ("COVERED") inferred from
+     the adjuster's description of the facts, even if the notes don't
+     use the word "approved" — inference from stated facts is NOT invention.
+  2. The claim number (CLM-YYYY-NNNNN) is supplied externally from the
+     case record and may appear in the summary without being in the
+     free-text adjuster notes — this is NOT invention.
+
+PURPOSE
+-------
+This prompt evaluates whether a generated claim summary is acceptable for
+claims operations routing. It covers ONLY the criteria that cannot be checked
+deterministically.
+
+NOTE ON SCOPE: The following criteria are evaluated by deterministic assertions
+BEFORE this judge is called, and are NOT part of this judge's remit:
+  - Whether the claim number appears in CLM-YYYY-NNNNN format
+  - Whether the date of loss is present and parseable
+  - Whether the excess/deductible amount is numeric
+  - Whether an exclusion clause ID (E-NN) is cited when a denial is stated
+
+This judge evaluates ONE criterion only:
+
+CRITERION
+---------
+Does the summary contain any information that is NOT supported by the adjuster
+notes? Specifically: does the summary invent coverage decisions, policy clause
+references, exclusion codes, dollar amounts, or factual claims that do not
+appear in the adjuster notes?
+
+OUTPUT FORMAT (mandatory — no other format accepted)
+-----------------------------------------------------
+VERDICT: PASS
+REASON: [One sentence explaining why the summary faithfully represents the notes]
+
+— OR —
+
+VERDICT: FAIL
+REASON: [One sentence identifying the specific invented or unsupported claim]
+
+RULES FOR THE JUDGE
+-------------------
+1. PASS only if EVERY factual claim in the summary can be traced to a specific
+   statement in the adjuster notes.
+2. FAIL if the summary adds any policy clause, exclusion code, coverage ruling,
+   dollar figure, or timeline that does not appear in the notes.
+3. Do NOT fail a summary for paraphrasing, reformatting, or reasonable inference
+   from stated facts (e.g. computing a deductible from a stated percentage and
+   Coverage A value is acceptable if both values are in the notes).
+4. Do NOT fail a summary for omitting minor details from the notes — omission
+   is not invention.
+5. A summary that says "coverage confirmed" when the notes say "coverage denied"
+   is a FAIL regardless of how well formatted it is.
+6. Output ONLY the VERDICT line and the REASON line. No preamble, no markdown.
+7. The claim number (CLM-YYYY-NNNNN) is taken from the case record, not from
+   the free-text notes — do NOT fail a summary for including a claim number
+   that doesn't appear verbatim in the adjuster notes text.
+8. Inferring a coverage decision from facts in the notes is acceptable. If the
+   notes describe a qualifying sudden loss with no exclusion applied, a summary
+   that says "coverage confirmed" or "COVERED" is faithful, not invented.
+
+---
+FEW-SHOT EXAMPLES FROM JUDGE V1 DISAGREEMENTS
+(These are cases where the v1 judge and the human labeller disagreed.
+ The correct label is shown. Use these to calibrate your judgement.)
+
+EXAMPLE A — JUDGE V1 FAILED THIS; CORRECT LABEL IS PASS
+---------------------------------------------------------
+ADJUSTER NOTES:
+Insured reports burst supply line under kitchen sink on 15 Mar 2024. Water
+damage confined to kitchen cabinet base and vinyl flooring approx 12 sq ft.
+Plumber confirmed sudden failure of braided steel supply line, no evidence of
+prior leakage. Repair estimate $3,200. Deductible $1,500. Policy form
+HO-0304 ed 03-24.
+
+GENERATED SUMMARY:
+Claim: CLM-2024-10001
+Date of Loss: 15 Mar 2024
+Policy Form: HO-0304 ed 03-24
+Coverage Decision: COVERED
+Deductible / Excess: $1,500
+Exclusion(s) Cited: N/A
+Summary: The insured reported a burst supply line under the kitchen sink on
+15 Mar 2024, causing water damage limited to the cabinet base and
+approximately 12 sq ft of vinyl flooring. The plumber verified a sudden
+failure of a braided steel line with no prior leakage, and the repair
+estimate is $3,200. Coverage is approved subject to the $1,500 deductible.
+
+CORRECT VERDICT: PASS
+CORRECT REASON: The notes describe a qualifying sudden failure under HO-0304
+with no exclusion applied — "Coverage is approved" is a valid inference from
+the stated facts, not an invented claim; the claim number is from the case
+record and the $1,500 deductible appears explicitly in the notes.
+
+WHY V1 WAS WRONG: The judge treated "Coverage is approved" as invented because
+the notes don't say the word "approved". But the notes describe exactly the
+facts that qualify for coverage — inference from qualifying facts is not
+invention, it is the purpose of a summary.
+
+---
+
+EXAMPLE B — JUDGE V1 FAILED THIS; CORRECT LABEL IS PASS
+---------------------------------------------------------
+ADJUSTER NOTES:
+Freelance graphic designer works from home studio, client property damaged
+during meeting. Liability claim. HO-0309 ed 05-24 E-19 business pursuits
+exclusion applies to freelance income activity. Coverage denied.
+
+GENERATED SUMMARY:
+Claim: CLM-2025-10021
+Date of Loss: N/A
+Policy Form: N/A
+Coverage Decision: DENIED
+Deductible / Excess: N/A
+Exclusion(s) Cited: E-19
+Summary: A freelance graphic designer was meeting a client in a home studio
+when the client's property was damaged. The liability claim is denied because
+the HO-0309 policy's business pursuits exclusion (E-19) applies to the
+designer's freelance income activity.
+
+CORRECT VERDICT: PASS
+CORRECT REASON: Every factual claim — the freelance design work, client
+meeting location, E-19 exclusion, HO-0309 policy, denial — is explicitly in
+the adjuster notes; the claim number (CLM-2025-10021) comes from the case
+record and need not appear in the free-text notes.
+
+WHY V1 WAS WRONG: The judge failed this summary claiming the claim number
+was "invented" because it doesn't appear in the adjuster notes text. Claim
+numbers come from the claim management system record, not the adjuster's
+free-text narrative — they are always supplied externally and should never
+be grounds for a FAIL verdict.
+
+---
+[END OF JUDGE V2 PROMPT]

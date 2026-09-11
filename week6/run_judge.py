@@ -14,6 +14,7 @@ import os
 import sys
 import json
 import re
+import time
 import argparse
 from datetime import datetime
 
@@ -26,8 +27,8 @@ load_dotenv()
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-JUDGE_MODEL = "openai/gpt-oss-120b"
-JUDGE_MODEL_PARAMS = {"temperature": 0.0, "max_tokens": 200}
+JUDGE_MODEL = "openai/gpt-oss-20b"
+JUDGE_MODEL_PARAMS = {"temperature": 0.0, "max_tokens": 1000}
 
 WEEK6_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.join(WEEK6_DIR, "..")
@@ -48,8 +49,12 @@ BOLD   = "\033[1m"
 DIM    = "\033[2m"
 RESET  = "\033[0m"
 
-_VERDICT_RE = re.compile(r"VERDICT:\s*(PASS|FAIL)", re.IGNORECASE)
-_REASON_RE  = re.compile(r"REASON:\s*(.+)", re.IGNORECASE)
+_VERDICT_RE = re.compile(r"VERDICT:\s*\*{0,2}(PASS|FAIL)\*{0,2}", re.IGNORECASE)
+_REASON_RE  = re.compile(r"REASON:\s*(.+?)(?:\s*\n|$)", re.IGNORECASE | re.DOTALL)
+
+INTER_CALL_SLEEP = 1.5   # seconds between judge API calls
+MAX_RETRIES = 3
+RETRY_WAIT_BASE = 5.0
 
 
 def get_client() -> OpenAI:
@@ -94,7 +99,8 @@ def run_judge_on_one(
     adjuster_notes: str,
     case_id: int,
 ) -> dict:
-    """Run the judge on a single (summary, notes) pair. Returns parsed verdict."""
+    """Run the judge on a single (summary, notes) pair. Returns parsed verdict.
+    Retries up to MAX_RETRIES times on empty response (rate limit recovery)."""
     user_message = (
         f"ADJUSTER NOTES:\n{adjuster_notes}\n\n"
         f"GENERATED SUMMARY:\n{summary}\n\n"
@@ -102,22 +108,34 @@ def run_judge_on_one(
         "Output only VERDICT: and REASON: lines."
     )
 
-    response = client.chat.completions.create(
-        model=JUDGE_MODEL,
-        messages=[
-            {"role": "system", "content": judge_prompt},
-            {"role": "user", "content": user_message},
-        ],
-        **JUDGE_MODEL_PARAMS,
-    )
-
-    raw = response.choices[0].message.content.strip()
+    raw = ""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = client.chat.completions.create(
+                model=JUDGE_MODEL,
+                messages=[
+                    {"role": "system", "content": judge_prompt},
+                    {"role": "user", "content": user_message},
+                ],
+                **JUDGE_MODEL_PARAMS,
+            )
+            raw = response.choices[0].message.content.strip()
+            if raw:  # non-empty response — done
+                break
+            # Empty response: wait and retry with increasing delay
+            wait = RETRY_WAIT_BASE * attempt
+            print(f"    [Case {case_id}] Empty response on attempt {attempt}/{MAX_RETRIES}, retrying in {wait}s...")
+            time.sleep(wait)
+        except Exception as e:
+            wait = RETRY_WAIT_BASE * attempt
+            print(f"    [Case {case_id}] API error ({e}), retrying in {wait}s...")
+            time.sleep(wait)
 
     verdict_match = _VERDICT_RE.search(raw)
     reason_match  = _REASON_RE.search(raw)
 
-    verdict = verdict_match.group(1).upper() if verdict_match else "UNKNOWN"
-    reason  = reason_match.group(1).strip()  if reason_match  else raw
+    verdict = verdict_match.group(1).upper() if verdict_match else ("UNKNOWN" if not raw else "PARSE_ERROR")
+    reason  = reason_match.group(1).strip()  if reason_match  else (raw[:200] if raw else "[empty response after retries]")
 
     return {
         "case_id":  case_id,
@@ -143,17 +161,27 @@ def run_judge(version: str, verbose: bool = True) -> list[dict]:
         print(f"{BOLD}{CYAN}{'─'*65}{RESET}")
 
     results = []
-    for case in cases:
+    for i, case in enumerate(cases, 1):
         cid = case["id"]
         summary = summaries.get(cid, "[MISSING SUMMARY]")
         notes = case["adjuster_notes"]
+
+        # Rate-limit safety: sleep between calls (skip before first)
+        if i > 1:
+            time.sleep(INTER_CALL_SLEEP)
 
         result = run_judge_on_one(client, judge_prompt, summary, notes, cid)
         result["mode"] = case.get("mode", "unknown")
         result["is_regression"] = case.get("is_regression", False)
 
         if verbose:
-            icon = f"{GREEN}✅ PASS{RESET}" if result["verdict"] == "PASS" else f"{RED}❌ FAIL{RESET}"
+            v = result["verdict"]
+            if v == "PASS":
+                icon = f"{GREEN}✅ PASS{RESET}"
+            elif v == "FAIL":
+                icon = f"{RED}❌ FAIL{RESET}"
+            else:
+                icon = f"{YELLOW}⚠️  {v}{RESET}"
             print(
                 f"  Case {cid:02d} [{case['mode']:25s}] → {icon}  {result['reason'][:70]}"
             )
