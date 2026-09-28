@@ -1,0 +1,584 @@
+{
+  "baseline": {
+    "results": [
+      {
+        "claim_id": "CLM-2024-10001",
+        "description": "Sudden pipe burst \u2014 covered, HO-0304",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "compute_payout"
+        ],
+        "steps_taken": 2,
+        "steps_needed": 2,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.001855,
+        "latency_seconds": 2.336,
+        "total_tokens": 2806,
+        "laps": 3,
+        "budget_exceeded": null,
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10002",
+        "description": "Continuous seepage \u2192 E-11 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002897,
+        "latency_seconds": 12.502,
+        "total_tokens": 4525,
+        "laps": 4,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10003",
+        "description": "Named Storm wind \u2014 covered, HO-0305",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 4,
+        "steps_needed": 2,
+        "step_efficiency": 0.5,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.004645,
+        "latency_seconds": 36.405,
+        "total_tokens": 7296,
+        "laps": 5,
+        "budget_exceeded": null,
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10004",
+        "description": "Mold from sudden discharge \u2014 covered, HO-0306",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "search_policy_exclusions",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 5,
+        "steps_needed": 2,
+        "step_efficiency": 0.4,
+        "arg_validity": 0.8,
+        "cost_dollars": 0.004923,
+        "latency_seconds": 55.174,
+        "total_tokens": 7754,
+        "laps": 6,
+        "budget_exceeded": "MAX_WALL_CLOCK_SECONDS",
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "excess_steps",
+          "budget_exceeded",
+          "hallucinated_args"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10005",
+        "description": "Mold from ambient humidity \u2192 E-22 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002972,
+        "latency_seconds": 22.714,
+        "total_tokens": 4661,
+        "laps": 4,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10006",
+        "description": "Scheduled jewelry theft \u2014 covered, HO-0307",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 4,
+        "steps_needed": 2,
+        "step_efficiency": 0.5,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.003362,
+        "latency_seconds": 46.057,
+        "total_tokens": 5220,
+        "laps": 5,
+        "budget_exceeded": "MAX_WALL_CLOCK_SECONDS",
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10007",
+        "description": "Earthquake tremors \u2192 E-31 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.003145,
+        "latency_seconds": 19.445,
+        "total_tokens": 4860,
+        "laps": 4,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10008",
+        "description": "Sinkhole collapse \u2192 E-33 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002912,
+        "latency_seconds": 18.168,
+        "total_tokens": 4523,
+        "laps": 4,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10009",
+        "description": "Loss below deductible \u2014 covered, payout $0, HO-0304",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "compute_payout"
+        ],
+        "steps_taken": 2,
+        "steps_needed": 2,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.001968,
+        "latency_seconds": 21.543,
+        "total_tokens": 2921,
+        "laps": 3,
+        "budget_exceeded": null,
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": []
+      },
+      {
+        "claim_id": "CLM-2024-10010",
+        "description": "Home business injury \u2192 E-19 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002873,
+        "latency_seconds": 29.683,
+        "total_tokens": 4473,
+        "laps": 4,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": []
+      }
+    ],
+    "metrics": {
+      "n": 10,
+      "tool_choice_accuracy": 1.0,
+      "arg_validity_rate": 0.98,
+      "step_efficiency_mean": 0.84,
+      "cost_p50": 0.002942,
+      "cost_max": 0.004923,
+      "cost_mean": 0.003155,
+      "outcome_pass_rate": 1.0,
+      "outcome_passes": 10,
+      "trajectory_passes": 10,
+      "gap": 0.0,
+      "latency_p50": 22.128,
+      "latency_max": 55.174
+    },
+    "mode_counts": {
+      "skip_exclusions": 0,
+      "wrong_tool_order": 0,
+      "hallucinated_args": 1,
+      "excess_steps": 1,
+      "budget_exceeded": 2,
+      "wrong_status": 0
+    }
+  },
+  "mitigated": {
+    "results": [
+      {
+        "claim_id": "CLM-2024-10001",
+        "description": "Sudden pipe burst \u2014 covered, HO-0304",
+        "dynamic_dependency": false,
+        "outcome_pass": false,
+        "trajectory_pass": false,
+        "traj_reason": "Missing required tools: {'compute_payout'}",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "search_policy_exclusions"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 2,
+        "step_efficiency": 0.667,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002192,
+        "latency_seconds": 21.985,
+        "total_tokens": 3315,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "UNKNOWN",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10002",
+        "description": "Continuous seepage \u2192 E-11 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.001903,
+        "latency_seconds": 15.3,
+        "total_tokens": 2963,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10003",
+        "description": "Named Storm wind \u2014 covered, HO-0305",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 2,
+        "step_efficiency": 0.667,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002171,
+        "latency_seconds": 23.693,
+        "total_tokens": 3291,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10004",
+        "description": "Mold from sudden discharge \u2014 covered, HO-0306",
+        "dynamic_dependency": false,
+        "outcome_pass": false,
+        "trajectory_pass": false,
+        "traj_reason": "Missing required tools: {'compute_payout'}",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "search_policy_exclusions"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 2,
+        "step_efficiency": 0.667,
+        "arg_validity": 0.667,
+        "cost_dollars": 0.001994,
+        "latency_seconds": 11.661,
+        "total_tokens": 3086,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "UNKNOWN",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "budget_exceeded",
+          "hallucinated_args"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10005",
+        "description": "Mold from ambient humidity \u2192 E-22 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002003,
+        "latency_seconds": 11.501,
+        "total_tokens": 3092,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10006",
+        "description": "Scheduled jewelry theft \u2014 covered, HO-0307",
+        "dynamic_dependency": false,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 2,
+        "step_efficiency": 0.667,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002097,
+        "latency_seconds": 13.362,
+        "total_tokens": 3180,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "COVERED",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10007",
+        "description": "Earthquake tremors \u2192 E-31 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.002021,
+        "latency_seconds": 13.715,
+        "total_tokens": 3124,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10008",
+        "description": "Sinkhole collapse \u2192 E-33 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.001921,
+        "latency_seconds": 14.222,
+        "total_tokens": 2966,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10009",
+        "description": "Loss below deductible \u2014 covered, payout $0, HO-0304",
+        "dynamic_dependency": false,
+        "outcome_pass": false,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "compute_payout"
+        ],
+        "steps_taken": 2,
+        "steps_needed": 2,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.00216,
+        "latency_seconds": 8.939,
+        "total_tokens": 3125,
+        "laps": 3,
+        "budget_exceeded": null,
+        "agent_status": "DENIED",
+        "expected_status": "COVERED",
+        "failure_modes": [
+          "wrong_status"
+        ]
+      },
+      {
+        "claim_id": "CLM-2024-10010",
+        "description": "Home business injury \u2192 E-19 exclusion (dynamic dependency)",
+        "dynamic_dependency": true,
+        "outcome_pass": true,
+        "trajectory_pass": true,
+        "traj_reason": "Matched accepted sequence: ['get_claim', 'search_policy_exclusions', 'compute_payout']",
+        "tool_calls": [
+          "get_claim",
+          "search_policy_exclusions",
+          "compute_payout"
+        ],
+        "steps_taken": 3,
+        "steps_needed": 3,
+        "step_efficiency": 1.0,
+        "arg_validity": 1.0,
+        "cost_dollars": 0.001883,
+        "latency_seconds": 19.325,
+        "total_tokens": 2929,
+        "laps": 4,
+        "budget_exceeded": "MAX_ITERATIONS",
+        "agent_status": "DENIED",
+        "expected_status": "DENIED",
+        "failure_modes": [
+          "budget_exceeded"
+        ]
+      }
+    ],
+    "metrics": {
+      "n": 10,
+      "tool_choice_accuracy": 0.8,
+      "arg_validity_rate": 0.967,
+      "step_efficiency_mean": 0.867,
+      "cost_p50": 0.002012,
+      "cost_max": 0.002192,
+      "cost_mean": 0.002034,
+      "outcome_pass_rate": 0.7,
+      "outcome_passes": 7,
+      "trajectory_passes": 8,
+      "gap": -0.1,
+      "latency_p50": 13.968,
+      "latency_max": 23.693
+    },
+    "mode_counts": {
+      "skip_exclusions": 0,
+      "wrong_tool_order": 0,
+      "hallucinated_args": 1,
+      "excess_steps": 0,
+      "budget_exceeded": 9,
+      "wrong_status": 1
+    }
+  }
+}
