@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "policy-search": {
+      "command": "python",
+      "args": ["src/mcp_server_policy.py"],
+      "description": "Own server: policy endorsement search + payout calculation"
+    },
+    "claims-system": {
+      "command": "python",
+      "args": ["src/mcp_server_claims.py"],
+      "description": "Third-party claims platform: claim status and adjuster notes"
+    }
+  }
+}

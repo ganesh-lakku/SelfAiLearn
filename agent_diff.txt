@@ -1,0 +1,43 @@
+# agent_diff.txt — Week 9: Config-only server addition proof
+
+## git diff src/mcp_agent.py
+
+The following diff shows ZERO changed lines in the agent module between
+"server 1 only" and "server 1 + server 2" states.
+Discovery is real: the agent reads mcp_config.json at runtime.
+
+```diff
+(empty — zero lines changed in mcp_agent.py)
+```
+
+## Why the diff is empty
+
+mcp_agent.py reads mcp_config.json via load_mcp_config() at startup.
+MCPServerPool iterates over `config["mcpServers"]` and discovers all tools
+via tools/list at runtime. No server names, tool names, or tool schemas are
+hardcoded in mcp_agent.py. Adding a new server stanza to mcp_config.json is
+sufficient for the agent to discover and use its tools on the next run.
+
+## What DID change (config only)
+
+mcp_config.json gained one new stanza:
+
+```diff
+ {
+   "mcpServers": {
+     "policy-search": {
+       "command": "python",
+       "args": ["src/mcp_server_policy.py"],
+       "description": "Own server: policy endorsement search + payout calculation"
+-    }
++    },
++    "claims-system": {
++      "command": "python",
++      "args": ["src/mcp_server_claims.py"],
++      "description": "Third-party claims platform: claim status and adjuster notes"
++    }
+   }
+ }
+```
+
+That is the complete change. The agent module is untouched.

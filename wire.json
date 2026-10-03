@@ -1,0 +1,228 @@
+{
+  "_annotation": {
+    "what_this_is": "Raw JSON-RPC 2.0 exchanges between mcp_agent.py (client/host) and mcp_server_claims.py (server). Hand-annotated field by field.",
+    "where_model_call_happens": "The model (Groq LLM) is called ONLY in mcp_agent.py inside run_mcp_agent() via client.chat.completions.create(). It does NOT happen in any MCP server. The servers expose data; the host runs inference.",
+    "where_model_does_NOT_call": "mcp_server_policy.py and mcp_server_claims.py never call an LLM. They return deterministic data \u2014 search results, claim records, payout calculations \u2014 via JSON-RPC. Placing an LLM inside a server would collapse the host/server separation that MCP enforces.",
+    "protocol": "JSON-RPC 2.0 over stdio, Content-Length framing",
+    "transport": "stdin/stdout of subprocess (MCPClient.Popen)"
+  },
+  "exchanges": [
+    {
+      "step": "1_initialize",
+      "direction": "client \u2192 server",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "protocolVersion": "2024-11-05",
+          "clientInfo": {
+            "name": "mcp-agent",
+            "version": "1.0"
+          },
+          "capabilities": {}
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "protocolVersion": "2024-11-05",
+          "serverInfo": {
+            "name": "claims-system",
+            "version": "1.0.0",
+            "description": "Claims platform: claim status and adjuster note history by claim number"
+          },
+          "capabilities": {
+            "tools": {}
+          }
+        }
+      },
+      "field_annotations": {
+        "jsonrpc": "Protocol version tag \u2014 always '2.0'. Required by JSON-RPC spec.",
+        "id": "Correlation ID \u2014 client sets it; server echoes it so responses are matchable.",
+        "method": "The RPC method name. MCP methods: initialize, tools/list, tools/call.",
+        "params": "Method arguments object. Schema depends on the method.",
+        "result": "Successful response payload. Mutually exclusive with 'error'.",
+        "error": "Error response payload {code, message}. Present only on failure.",
+        "protocolVersion": "MCP protocol version the client requests. Server echoes or rejects.",
+        "clientInfo": "Identifies the connecting client (name, version). Informational only.",
+        "capabilities": "Feature flags the client/server advertise. {} = no special caps.",
+        "serverInfo": "Server name and version, returned by initialize.",
+        "tools": "Array of tool descriptors from tools/list.",
+        "name": "Tool name string \u2014 unique identifier used in tools/call.",
+        "description": "Human/LLM-readable prompt that guides when and how to call the tool.",
+        "inputSchema": "JSON Schema of the tool's argument object \u2014 validated by the host.",
+        "content": "Array of content blocks returned by tools/call.",
+        "type": "Content block type \u2014 'text', 'image', 'resource'. Always 'text' here.",
+        "text": "The serialised tool result as a JSON string inside the text block.",
+        "isError": "True when the tool returned an error. Lets the host mark it as failure."
+      }
+    },
+    {
+      "step": "2_tools_list",
+      "direction": "client \u2192 server",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/list",
+        "params": {}
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "tools": [
+            {
+              "name": "get_claim",
+              "description": "Retrieve the full claim record \u2014 loss date, claimed amount, excess amount, policy form number, and adjuster notes \u2014 for a given claim number. Always call this FIRST to load the claim before searching exclusions or computing a payout. Claim numbers follow the format CLM-YYYY-nnnnn (e.g. CLM-2024-10001). If the number is not found the server returns the correct format so you can ask the caller to verify the number rather than guessing coverage.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "claim_id": {
+                    "type": "string",
+                    "description": "Claim identifier in CLM-YYYY-nnnnn format, e.g. CLM-2024-10001."
+                  }
+                },
+                "required": [
+                  "claim_id"
+                ]
+              }
+            },
+            {
+              "name": "get_adjuster_notes",
+              "description": "Retrieve only the adjuster note history for a claim, without the full financial record. Use this when you need to re-read notes to identify peril keywords (seepage, mold, earthquake, business pursuits) without re-loading all claim fields. Same format requirement as get_claim: CLM-YYYY-nnnnn.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "claim_id": {
+                    "type": "string",
+                    "description": "Claim identifier in CLM-YYYY-nnnnn format."
+                  }
+                },
+                "required": [
+                  "claim_id"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "field_annotations": {
+        "jsonrpc": "Protocol version tag \u2014 always '2.0'. Required by JSON-RPC spec.",
+        "id": "Correlation ID \u2014 client sets it; server echoes it so responses are matchable.",
+        "method": "The RPC method name. MCP methods: initialize, tools/list, tools/call.",
+        "params": "Method arguments object. Schema depends on the method.",
+        "result": "Successful response payload. Mutually exclusive with 'error'.",
+        "error": "Error response payload {code, message}. Present only on failure.",
+        "protocolVersion": "MCP protocol version the client requests. Server echoes or rejects.",
+        "clientInfo": "Identifies the connecting client (name, version). Informational only.",
+        "capabilities": "Feature flags the client/server advertise. {} = no special caps.",
+        "serverInfo": "Server name and version, returned by initialize.",
+        "tools": "Array of tool descriptors from tools/list.",
+        "name": "Tool name string \u2014 unique identifier used in tools/call.",
+        "description": "Human/LLM-readable prompt that guides when and how to call the tool.",
+        "inputSchema": "JSON Schema of the tool's argument object \u2014 validated by the host.",
+        "content": "Array of content blocks returned by tools/call.",
+        "type": "Content block type \u2014 'text', 'image', 'resource'. Always 'text' here.",
+        "text": "The serialised tool result as a JSON string inside the text block.",
+        "isError": "True when the tool returned an error. Lets the host mark it as failure."
+      }
+    },
+    {
+      "step": "3_tools_call_happy",
+      "direction": "client \u2192 server",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": {
+          "name": "get_claim",
+          "arguments": {
+            "claim_id": "CLM-2024-10001"
+          }
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"success\": true, \"claim_id\": \"CLM-2024-10001\", \"policy_number\": \"POL-HO-772101\", \"form_number\": \"HO-0304\", \"edition_date\": \"03-24\", \"date_of_loss\": \"2024-03-15\", \"claimed_amount\": 3200.0, \"excess_amount\": 1500.0, \"adjuster_notes\": \"Insured reports burst supply line under kitchen sink on 15 Mar 2024. Water damage confined to kitchen cabinet base and vinyl flooring approx 12 sq ft. Plumber invoice confirms sudden failure of braided steel supply line, with no evidence of prior leakage or slow seepage. Repair estimate $3,200. Deductible $1,500. Policy form HO-0304 ed 03-24 applies.\"}"
+            }
+          ]
+        }
+      },
+      "field_annotations": {
+        "jsonrpc": "Protocol version tag \u2014 always '2.0'. Required by JSON-RPC spec.",
+        "id": "Correlation ID \u2014 client sets it; server echoes it so responses are matchable.",
+        "method": "The RPC method name. MCP methods: initialize, tools/list, tools/call.",
+        "params": "Method arguments object. Schema depends on the method.",
+        "result": "Successful response payload. Mutually exclusive with 'error'.",
+        "error": "Error response payload {code, message}. Present only on failure.",
+        "protocolVersion": "MCP protocol version the client requests. Server echoes or rejects.",
+        "clientInfo": "Identifies the connecting client (name, version). Informational only.",
+        "capabilities": "Feature flags the client/server advertise. {} = no special caps.",
+        "serverInfo": "Server name and version, returned by initialize.",
+        "tools": "Array of tool descriptors from tools/list.",
+        "name": "Tool name string \u2014 unique identifier used in tools/call.",
+        "description": "Human/LLM-readable prompt that guides when and how to call the tool.",
+        "inputSchema": "JSON Schema of the tool's argument object \u2014 validated by the host.",
+        "content": "Array of content blocks returned by tools/call.",
+        "type": "Content block type \u2014 'text', 'image', 'resource'. Always 'text' here.",
+        "text": "The serialised tool result as a JSON string inside the text block.",
+        "isError": "True when the tool returned an error. Lets the host mark it as failure."
+      }
+    },
+    {
+      "step": "4_tools_call_error",
+      "direction": "client \u2192 server",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "tools/call",
+        "params": {
+          "name": "get_claim",
+          "arguments": {
+            "claim_id": "CLM-2024-88120"
+          }
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"success\": false, \"error\": \"Claim CLM-2024-88120 not found. Claim numbers look like CLM-YYYY-nnnnn (e.g. CLM-2024-10001). Check the number and retry, or ask the caller to verify the claim ID.\"}"
+            }
+          ],
+          "isError": true
+        }
+      },
+      "field_annotations": {
+        "jsonrpc": "Protocol version tag \u2014 always '2.0'. Required by JSON-RPC spec.",
+        "id": "Correlation ID \u2014 client sets it; server echoes it so responses are matchable.",
+        "method": "The RPC method name. MCP methods: initialize, tools/list, tools/call.",
+        "params": "Method arguments object. Schema depends on the method.",
+        "result": "Successful response payload. Mutually exclusive with 'error'.",
+        "error": "Error response payload {code, message}. Present only on failure.",
+        "protocolVersion": "MCP protocol version the client requests. Server echoes or rejects.",
+        "clientInfo": "Identifies the connecting client (name, version). Informational only.",
+        "capabilities": "Feature flags the client/server advertise. {} = no special caps.",
+        "serverInfo": "Server name and version, returned by initialize.",
+        "tools": "Array of tool descriptors from tools/list.",
+        "name": "Tool name string \u2014 unique identifier used in tools/call.",
+        "description": "Human/LLM-readable prompt that guides when and how to call the tool.",
+        "inputSchema": "JSON Schema of the tool's argument object \u2014 validated by the host.",
+        "content": "Array of content blocks returned by tools/call.",
+        "type": "Content block type \u2014 'text', 'image', 'resource'. Always 'text' here.",
+        "text": "The serialised tool result as a JSON string inside the text block.",
+        "isError": "True when the tool returned an error. Lets the host mark it as failure."
+      }
+    }
+  ]
+}
