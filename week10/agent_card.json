@@ -1,0 +1,84 @@
+{
+  "schema_version": "a2a/1.0",
+  "agent_id": "claims-orchestrator-v1",
+  "display_name": "Insurance Claims Triage Orchestrator",
+  "description": "Multi-agent orchestrator for homeowners insurance claims triage. Decomposes each claim into a coverage/exclusions sub-task and an adjuster-note summarisation sub-task, then synthesises a final coverage decision and payout.",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "id": "coverage_decision",
+      "name": "Coverage & Exclusions Decision",
+      "description": "Determines COVERED/DENIED/PARTIALLY_COVERED for a claim by checking policy exclusions.",
+      "tags": [
+        "insurance",
+        "coverage",
+        "exclusions"
+      ]
+    },
+    {
+      "id": "adjuster_note_summary",
+      "name": "Adjuster Note Summarisation",
+      "description": "Extracts structured cause-of-loss summary from adjuster notes.",
+      "tags": [
+        "insurance",
+        "summarisation",
+        "adjuster"
+      ]
+    },
+    {
+      "id": "payout_computation",
+      "name": "Payout Computation",
+      "description": "Computes net payable amount after policy excess deduction.",
+      "tags": [
+        "insurance",
+        "payout",
+        "calculation"
+      ]
+    }
+  ],
+  "input_modes": [
+    "text/plain",
+    "application/json"
+  ],
+  "output_modes": [
+    "application/json"
+  ],
+  "auth": {
+    "type": "api_key",
+    "header": "X-API-Key",
+    "description": "Internal service API key \u2014 rotated monthly via Vault"
+  },
+  "endpoints": {
+    "task_submit": "POST /a2a/tasks",
+    "task_status": "GET /a2a/tasks/{task_id}",
+    "task_cancel": "DELETE /a2a/tasks/{task_id}"
+  },
+  "task_states": [
+    "submitted",
+    "working",
+    "completed",
+    "failed",
+    "input-required"
+  ],
+  "rate_limits": {
+    "requests_per_minute": 30,
+    "tokens_per_minute": 100000
+  },
+  "worker_agents": [
+    {
+      "id": "coverage-worker-v1",
+      "role": "coverage_decision",
+      "tools": [
+        "get_claim",
+        "search_policy_exclusions"
+      ]
+    },
+    {
+      "id": "adjuster-summary-worker-v1",
+      "role": "adjuster_note_summary",
+      "tools": [
+        "get_claim"
+      ]
+    }
+  ]
+}

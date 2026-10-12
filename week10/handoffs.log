@@ -1,0 +1,83 @@
+# handoffs.log — Week 10 Multi-Agent Orchestrator Hand-off Ledger
+# Generated: 2026-10-12 19:14:21
+# Single-agent total tokens : 41743
+# Orchestrator total tokens  : 24078
+# Context re-send multiplier : 0.6x  (dominant hand-off: 'orchestrator → orchestrator_synthesis_llm [synthesis_request]', 3295 tokens, 53.8% of all orchestrator tokens)
+
+Claim ID             From                           To                                  Direction                   Tokens  Summary
+-------------------------------------------------------------------------------------------------------------------------------------------------
+CLM-2024-10001       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10001
+CLM-2024-10001       coverage_worker                orchestrator                        response                       111  Coverage=COVERED Excl=None tokens=1209
+CLM-2024-10001       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10001
+CLM-2024-10001       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=554
+CLM-2024-10001       orchestrator                   orchestrator_synthesis_llm          synthesis_request              323  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10001       orchestrator_synthesis_llm     orchestrator                        synthesis_response              53  Final decision: status=COVERED excl=None degraded=False
+CLM-2024-10001       orchestrator                   caller                              final_result                    10  Final: status=COVERED payable=$1700.00 degraded=False
+CLM-2024-10002       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10002
+CLM-2024-10002       coverage_worker                orchestrator                        response                       118  Coverage=DENIED Excl=E-11 tokens=1704
+CLM-2024-10002       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10002
+CLM-2024-10002       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=559
+CLM-2024-10002       orchestrator                   orchestrator_synthesis_llm          synthesis_request              330  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10002       orchestrator_synthesis_llm     orchestrator                        synthesis_response              44  Final decision: status=DENIED excl=E-11 degraded=False
+CLM-2024-10002       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=False
+CLM-2024-10003       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10003
+CLM-2024-10003       coverage_worker                orchestrator                        response                        80  ERROR: HTTP 500 Internal Server Error — coverage worker unavailable
+CLM-2024-10003       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10003
+CLM-2024-10003       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=552
+CLM-2024-10003       orchestrator                   orchestrator_synthesis_llm          synthesis_request              352  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10003       orchestrator_synthesis_llm     orchestrator                        synthesis_response              54  Final decision: status=DENIED excl=None degraded=True
+CLM-2024-10003       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=True
+CLM-2024-10004       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10004
+CLM-2024-10004       coverage_worker                orchestrator                        response                       117  Coverage=COVERED Excl=None tokens=1183
+CLM-2024-10004       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10004
+CLM-2024-10004       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=555
+CLM-2024-10004       orchestrator                   orchestrator_synthesis_llm          synthesis_request              329  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10004       orchestrator_synthesis_llm     orchestrator                        synthesis_response              54  Final decision: status=COVERED excl=None degraded=False
+CLM-2024-10004       orchestrator                   caller                              final_result                    10  Final: status=COVERED payable=$5000.00 degraded=False
+CLM-2024-10005       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10005
+CLM-2024-10005       coverage_worker                orchestrator                        response                       115  Coverage=DENIED Excl=E-22 tokens=1677
+CLM-2024-10005       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10005
+CLM-2024-10005       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=550
+CLM-2024-10005       orchestrator                   orchestrator_synthesis_llm          synthesis_request              326  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10005       orchestrator_synthesis_llm     orchestrator                        synthesis_response              56  Final decision: status=DENIED excl=E-22 degraded=False
+CLM-2024-10005       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=False
+CLM-2024-10006       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10006
+CLM-2024-10006       coverage_worker                orchestrator                        response                       112  Coverage=COVERED Excl=None tokens=1142
+CLM-2024-10006       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10006
+CLM-2024-10006       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=553
+CLM-2024-10006       orchestrator                   orchestrator_synthesis_llm          synthesis_request              325  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10006       orchestrator_synthesis_llm     orchestrator                        synthesis_response              54  Final decision: status=COVERED excl=None degraded=False
+CLM-2024-10006       orchestrator                   caller                              final_result                    10  Final: status=COVERED payable=$3700.00 degraded=False
+CLM-2024-10007       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10007
+CLM-2024-10007       coverage_worker                orchestrator                        response                       109  Coverage=DENIED Excl=E-31 tokens=1719
+CLM-2024-10007       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10007
+CLM-2024-10007       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=553
+CLM-2024-10007       orchestrator                   orchestrator_synthesis_llm          synthesis_request              320  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10007       orchestrator_synthesis_llm     orchestrator                        synthesis_response              43  Final decision: status=DENIED excl=E-31 degraded=False
+CLM-2024-10007       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=False
+CLM-2024-10008       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10008
+CLM-2024-10008       coverage_worker                orchestrator                        response                       112  Coverage=DENIED Excl=E-33 tokens=1562
+CLM-2024-10008       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10008
+CLM-2024-10008       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=539
+CLM-2024-10008       orchestrator                   orchestrator_synthesis_llm          synthesis_request              323  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10008       orchestrator_synthesis_llm     orchestrator                        synthesis_response              50  Final decision: status=DENIED excl=E-33 degraded=False
+CLM-2024-10008       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=False
+CLM-2024-10009       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10009
+CLM-2024-10009       coverage_worker                orchestrator                        response                       126  Coverage=COVERED Excl=None tokens=1322
+CLM-2024-10009       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10009
+CLM-2024-10009       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=551
+CLM-2024-10009       orchestrator                   orchestrator_synthesis_llm          synthesis_request              338  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10009       orchestrator_synthesis_llm     orchestrator                        synthesis_response              67  Final decision: status=COVERED excl=None degraded=False
+CLM-2024-10009       orchestrator                   caller                              final_result                     9  Final: status=COVERED payable=$0.00 degraded=False
+CLM-2024-10010       orchestrator                   coverage_worker                     request                         14  Request coverage decision for CLM-2024-10010
+CLM-2024-10010       coverage_worker                orchestrator                        response                       116  Coverage=DENIED Excl=E-19 tokens=1195
+CLM-2024-10010       orchestrator                   adjuster_summary_worker             request                         15  Request adjuster note summary for CLM-2024-10010
+CLM-2024-10010       adjuster_summary_worker        orchestrator                        response                        79  CauseOfLoss='' Trigger='None' tokens=540
+CLM-2024-10010       orchestrator                   orchestrator_synthesis_llm          synthesis_request              329  Orchestrator synthesises worker outputs; re-sends both payloads to LLM
+CLM-2024-10010       orchestrator_synthesis_llm     orchestrator                        synthesis_response              63  Final decision: status=DENIED excl=E-19 degraded=False
+CLM-2024-10010       orchestrator                   caller                              final_result                     9  Final: status=DENIED payable=$0.00 degraded=False
+-------------------------------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                                                 6122
+
+## Multiplier Line
+Context re-send multiplier = 0.6x (orchestrator 24078 tokens / single-agent 41743 tokens). Dominant hand-off: 'orchestrator → orchestrator_synthesis_llm [synthesis_request]' accounts for 3295 tokens (53.8% of all orchestrator tokens).
