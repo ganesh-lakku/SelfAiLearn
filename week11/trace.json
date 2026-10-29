@@ -1,0 +1,78 @@
+{
+  "trace_id": "d7119375-11a5-443f-94b3-bce5119a905d",
+  "timestamp": "2026-10-28T17:55:37.346725+00:00",
+  "prompt_version": "v1.0.0-week5",
+  "model": "openai/gpt-oss-120b",
+  "model_params": {
+    "temperature": 0.0,
+    "max_tokens": 800
+  },
+  "question": "Is mold from HVAC condensation covered under HO-0306?",
+  "raw_output": "Yes, mold resulting from HVAC condensation can be covered under HO-0306. Under the remediation sublimit exception (CLAUSE MF-2), if mold is a direct result of a covered water discharge event, the endorsement will pay up to $10,000 for mold remediation costs, provided the water event is reported within 72 hours and a licensed contractor provides a written estimate. [SOURCE: HO-0306_sa_chunk_004 | HO-0306 | CLAUSE-MF-2] [SOURCE: HO-0306_sa_chunk_005 | HO-0306 | CLAUSE-WD-1]",
+  "is_refusal": false,
+  "retrieved_context_ids": [
+    {
+      "chunk_id": "HO-0306_sa_chunk_004",
+      "form_number": "HO-0306",
+      "clause_id": "CLAUSE-MF-2",
+      "rank": 1,
+      "score": 0.6234
+    },
+    {
+      "chunk_id": "HO-0306_sa_chunk_005",
+      "form_number": "HO-0306",
+      "clause_id": "CLAUSE-WD-1",
+      "rank": 2,
+      "score": 0.5891
+    },
+    {
+      "chunk_id": "HO-0306_sa_chunk_003",
+      "form_number": "HO-0306",
+      "clause_id": "CLAUSE-MF-1",
+      "rank": 3,
+      "score": 0.5622
+    },
+    {
+      "chunk_id": "HO-0306_sa_chunk_001",
+      "form_number": "HO-0306",
+      "clause_id": "PREAMBLE",
+      "rank": 4,
+      "score": 0.52
+    },
+    {
+      "chunk_id": "HO-0306_sa_chunk_002",
+      "form_number": "HO-0306",
+      "clause_id": "SECTION-I",
+      "rank": 5,
+      "score": 0.498
+    }
+  ],
+  "tokens": {
+    "system_prompt": 291,
+    "context": 297,
+    "question": 14,
+    "overhead": 191,
+    "total_input": 793,
+    "output": 119,
+    "total": 912
+  },
+  "cost": {
+    "input_cost_usd": 0.000468,
+    "output_cost_usd": 9.4e-05,
+    "generation_cost_usd": 0.000562,
+    "embedding_cost_usd": 0.0,
+    "retrieval_infra_cost_usd": 0.0,
+    "total_cost_usd": 0.000562
+  },
+  "latency": {
+    "retrieval_ms": 150,
+    "embedding_ms": 50,
+    "generation_ms": 1200,
+    "total_ms": 1400
+  },
+  "diagnosis": {
+    "bug": "Model affirmed coverage for HVAC condensation mold under CLAUSE MF-2 but IGNORED exclusion E-27 which explicitly excludes 'Mold from HVAC condensation (chronic)' when HVAC not serviced in 3 years.",
+    "root_cause": "Retrieval did NOT fetch the EXCLUSION-TABLE chunk (HO-0306_sa_chunk_008) containing E-27. The model only saw CLAUSE MF-2 (the exception) without seeing the exclusion schedule, so it had no evidence to refuse.",
+    "retrieval_gap": "The exclusion table chunk was not in the top-5 retrieved context. The model correctly followed the grounding rule (answer only from context) but the context was incomplete — the bug is in retrieval, not generation."
+  }
+}
