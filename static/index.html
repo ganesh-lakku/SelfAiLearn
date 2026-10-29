@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claims RAG — Endorsement Assistant</title>
+    <meta name="description" content="AI-powered insurance claims assistant for homeowners policy endorsements. Ask questions about HO-0304 through HO-0309 endorsements.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                            <path d="M12 22V12" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M22 7L12 12L2 7" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M17 4.5L7 9.5" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">Claims RAG</span>
+                        <span class="logo-subtitle">Endorsement Assistant</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Search Strategy</h3>
+                <div class="strategy-toggle" id="strategyToggle">
+                    <button class="strategy-btn active" data-strategy="hybrid" id="btnHybrid">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        Hybrid (BM25 + RRF)
+                    </button>
+                    <button class="strategy-btn" data-strategy="vector" id="btnVector">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        Vector Only
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Indexed Endorsements</h3>
+                <div class="endorsement-list">
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0304</span>
+                        <span class="endorsement-desc">Water Damage + Supply Line</span>
+                    </div>
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0305</span>
+                        <span class="endorsement-desc">Named Storm Deductible</span>
+                    </div>
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0306</span>
+                        <span class="endorsement-desc">Mold & Fungi Exclusion</span>
+                    </div>
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0307</span>
+                        <span class="endorsement-desc">Scheduled Personal Property</span>
+                    </div>
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0308</span>
+                        <span class="endorsement-desc">Earth Movement (Broadened)</span>
+                    </div>
+                    <div class="endorsement-item">
+                        <span class="endorsement-badge">HO-0309</span>
+                        <span class="endorsement-desc">Business Pursuits Exclusion</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Quick Questions</h3>
+                <div class="quick-questions" id="quickQuestions">
+                    <button class="quick-q-btn" data-question="Does E-17 apply under HO-0304 ed. 03-24?">
+                        Does E-17 apply under HO-0304?
+                    </button>
+                    <button class="quick-q-btn" data-question="What is the named storm deductible under HO-0305?">
+                        Named storm deductible in HO-0305?
+                    </button>
+                    <button class="quick-q-btn" data-question="Does HO-0306 exclude mold damage?">
+                        Does HO-0306 exclude mold?
+                    </button>
+                    <button class="quick-q-btn" data-question="Does HO-0308 cover earthquake damage?">
+                        Earthquake coverage in HO-0308?
+                    </button>
+                    <button class="quick-q-btn" data-question="Is there a business pursuits exclusion in HO-0309?">
+                        Business exclusion in HO-0309?
+                    </button>
+                    <button class="quick-q-btn" data-question="What does sudden and accidental mean under HO-0304?">
+                        "Sudden & accidental" in HO-0304?
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Checking...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div class="top-bar-title">
+                    <h1>Insurance Claims Assistant</h1>
+                    <span class="top-bar-badge" id="strategyBadge">Hybrid Search</span>
+                </div>
+                <button class="clear-btn" id="clearChat" title="Clear chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </header>
+
+            <!-- Chat Messages -->
+            <div class="chat-area" id="chatArea">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="url(#welcomeGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+                            <path d="M12 22V12" stroke="url(#welcomeGrad)" stroke-width="1.2"/>
+                            <path d="M22 7L12 12L2 7" stroke="url(#welcomeGrad)" stroke-width="1.2"/>
+                            <defs>
+                                <linearGradient id="welcomeGrad" x1="2" y1="2" x2="22" y2="22">
+                                    <stop stop-color="#6366f1"/>
+                                    <stop offset="1" stop-color="#a855f7"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h2 class="welcome-title">Ask about your policy endorsements</h2>
+                    <p class="welcome-subtitle">
+                        Get grounded, cited answers from indexed HO-0304 through HO-0309 endorsements.
+                        Every answer is sourced directly from policy documents — no hallucination.
+                    </p>
+                    <div class="welcome-cards">
+                        <div class="welcome-card" data-question="Does E-17 apply under HO-0304 ed. 03-24?">
+                            <div class="welcome-card-icon">🔍</div>
+                            <div class="welcome-card-text">
+                                <strong>Exclusion Lookup</strong>
+                                <span>Does E-17 apply under HO-0304?</span>
+                            </div>
+                        </div>
+                        <div class="welcome-card" data-question="What is the named storm deductible under HO-0305?">
+                            <div class="welcome-card-icon">🌀</div>
+                            <div class="welcome-card-text">
+                                <strong>Deductible Check</strong>
+                                <span>Named storm deductible in HO-0305?</span>
+                            </div>
+                        </div>
+                        <div class="welcome-card" data-question="Does HO-0306 exclude mold damage?">
+                            <div class="welcome-card-icon">🍄</div>
+                            <div class="welcome-card-text">
+                                <strong>Coverage Query</strong>
+                                <span>Does HO-0306 exclude mold?</span>
+                            </div>
+                        </div>
+                        <div class="welcome-card" data-question="Does HO-0308 cover earthquake damage?">
+                            <div class="welcome-card-icon">🏔️</div>
+                            <div class="welcome-card-text">
+                                <strong>Earth Movement</strong>
+                                <span>Earthquake coverage in HO-0308?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer"></div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <form class="input-form" id="chatForm">
+                    <div class="input-wrapper">
+                        <textarea
+                            id="questionInput"
+                            placeholder="Ask a question about the endorsements..."
+                            rows="1"
+                            autocomplete="off"
+                            aria-label="Question input"
+                        ></textarea>
+                        <button type="submit" class="send-btn" id="sendBtn" title="Send question">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="input-hint">
+                        Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line
+                    </p>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
