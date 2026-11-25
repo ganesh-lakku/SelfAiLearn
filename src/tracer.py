@@ -38,7 +38,7 @@ TRACES_PATH = os.path.join(os.path.dirname(__file__), "..", "traces.jsonl")
 # Lets you know which prompt produced which trace when replaying.
 # ---------------------------------------------------------------------------
 
-PROMPT_VERSION = "v1.0.0-week5"
+PROMPT_VERSION = "v1.2.0-week12"
 
 # ---------------------------------------------------------------------------
 # PII redaction — runs on the question BEFORE writing to disk
@@ -53,6 +53,25 @@ _ADDR_NUM_RE = re.compile(r"\b\d{1,5}\s+[A-Z][a-z]+\s+(Street|St|Avenue|Ave|Road
 # Proper-name heuristic: two consecutive Title-Case words not in a known form-number pattern
 _PROPER_NAME_RE = re.compile(r"\b(?!HO-\d|CLAUSE|SECTION|EXCLUSION)[A-Z][a-z]+ [A-Z][a-z]+\b")
 
+# Week 12 additions ──────────────────────────────────────────────────────────
+
+# ZIP codes: 5-digit or ZIP+4 (e.g. 90210, 90210-1234)
+_ZIP_RE = re.compile(r"\b\d{5}(?:-\d{4})?\b")
+
+# Apartment / unit numbers (e.g. "Apt 4B", "Unit 12", "Suite 100")
+_APT_RE = re.compile(r"\b(Apt|Apartment|Unit|Suite|Ste|Rm|Room)\s+[A-Z0-9]{1,6}\b", re.IGNORECASE)
+
+# Phone numbers: (555) 123-4567 or 555-123-4567 or 555.123.4567
+_PHONE_RE = re.compile(
+    r"\(?\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4}"
+)
+
+# Injury descriptions: "suffered X injury", "X injuries", "bodily injury to <name>"
+_INJURY_RE = re.compile(
+    r"(suffered\s+\w+\s+injur\w*|bodily\s+injury\s+to\s+[A-Z][a-z]+(\s+[A-Z][a-z]+)?|\w+\s+injuri\w+)",
+    re.IGNORECASE,
+)
+
 
 def redact(text: str) -> str:
     """
@@ -60,11 +79,19 @@ def redact(text: str) -> str:
     Patterns removed:
       - Claim numbers (CLM-YYYY-NNNNN)
       - Street address numbers
+      - ZIP codes (5-digit or ZIP+4)
+      - Apartment / unit numbers (Apt 4B, Unit 12, Suite 100)
+      - Phone numbers ((555) 123-4567, 555-123-4567)
+      - Injury descriptions (suffered X injury, bodily injury to Name)
       - Proper name pairs (heuristic — two consecutive Title-Case words)
     Returns the redacted string.
     """
     text = _CLAIM_RE.sub("[CLAIM-REDACTED]", text)
     text = _ADDR_NUM_RE.sub("[ADDRESS-REDACTED]", text)
+    text = _ZIP_RE.sub("[ZIP-REDACTED]", text)
+    text = _APT_RE.sub("[UNIT-REDACTED]", text)
+    text = _PHONE_RE.sub("[PHONE-REDACTED]", text)
+    text = _INJURY_RE.sub("[INJURY-REDACTED]", text)
     # Only apply name-heuristic to strings that look like they contain claim data
     # (questions with "claimant", "adjuster", "payout" etc.) to avoid redacting
     # form names like "Named Storm Deductible".
@@ -173,3 +200,64 @@ def get_trace_by_id(trace_id: str, path: str | None = None) -> dict | None:
 def count_traces(path: str | None = None) -> int:
     """Return the number of traces currently in the file."""
     return len(load_traces(path))
+
+
+# ---------------------------------------------------------------------------
+# Week 12: Span-level trace writer
+# ---------------------------------------------------------------------------
+
+def write_span_trace(
+    trace_id: str,
+    span_name: str,
+    span_start_time: float,
+    span_end_time: float,
+    tokens_in: int,
+    tokens_out: int,
+    cost_usd: float,
+    model: str,
+    metadata: dict | None = None,
+) -> None:
+    """
+    Append a span-level record to traces.jsonl.
+
+    One span corresponds to one tool call or one LLM hop within a larger agent
+    trace. All spans sharing the same trace_id belong to the same agent run.
+
+    Args:
+        trace_id:        The parent trace UUID (same across all spans in one run).
+        span_name:       Short label, e.g. "get_claim", "check_coverage_in_force".
+        span_start_time: Unix epoch float (time.time()) at span start.
+        span_end_time:   Unix epoch float at span end.
+        tokens_in:       Prompt tokens consumed by this span.
+        tokens_out:      Completion tokens produced by this span.
+        cost_usd:        Estimated dollar cost for this span.
+        model:           Model name string, e.g. "openai/gpt-oss-120b".
+        metadata:        Optional arbitrary dict of extra context (redacted before write).
+    """
+    if metadata is None:
+        metadata = {}
+
+    latency_ms = round((span_end_time - span_start_time) * 1000, 2)
+
+    # Redact any string values inside metadata
+    safe_metadata = {}
+    for k, v in metadata.items():
+        safe_metadata[k] = redact(str(v)) if isinstance(v, str) else v
+
+    record = {
+        "trace_id":    trace_id,
+        "span_name":   span_name,
+        "span_start":  datetime.fromtimestamp(span_start_time, tz=timezone.utc).isoformat(),
+        "span_end":    datetime.fromtimestamp(span_end_time,   tz=timezone.utc).isoformat(),
+        "latency_ms":  latency_ms,
+        "tokens_in":   tokens_in,
+        "tokens_out":  tokens_out,
+        "cost_usd":    round(cost_usd, 8),
+        "model":       model,
+        "metadata":    safe_metadata,
+        "pii_redacted": True,
+        "prompt_version": PROMPT_VERSION,
+    }
+
+    with open(TRACES_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")

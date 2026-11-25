@@ -1,9 +1,70 @@
-# Week 3 Practical — Task Set D: Insurance Claims RAG
+# Week 12 Capstone — Claims Triage & Coverage Assistant (Variant D)
 
-## Overview
-This project implements a Retrieval-Augmented Generation (RAG) pipeline for
-insurance claims, specifically for evaluating two chunking strategies on
-homeowners policy endorsements.
+> **Soft Suave · The AI Engineering League**  
+> **Gate:** M6 — End-to-end app + closed loop → AI Summit & certification  
+> **Domain:** Insurance claims triage, temporal policy wording resolution, MCP integration, and compliance guardrails.
+
+---
+
+## ⚡ Quickstart — One Command Runs Everything
+
+A stranger can clone and run the integrated system end to end with one command:
+
+```bash
+# 1. Clone & enter
+git clone https://github.com/ganesh-lakku/SelfAiLearn.git
+cd SelfAiLearn
+
+# 2. Activate virtual environment & configure API key
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+export GROQ_API_KEY="your-groq-api-key"   # or set in .env
+
+# 3. RUN THE INTEGRATED CAPSTONE (One command)
+python3 week12/run_week12.py
+```
+
+### Options:
+- `python3 week12/run_week12.py --claim-id CLM-2024-77202`: Live triage of flood straddle claim (loss date: 2024-12-31)
+- `python3 week12/run_week12.py --eval-only`: Run the 35-case integrated eval suite (assertions + LLM judge)
+- `python3 week12/run_week12.py --trajectory-only`: Run the 15-case trajectory evaluation suite
+
+---
+
+## 🏛️ Week 12 Capstone Artifacts & Submission Index
+
+| Item / Rubric Criterion | File Location | Key Metric / Deliverable |
+|---|---|---|
+| **One-Page Architecture Sketch** | [`week12/architecture.md`](week12/architecture.md) | Agent, MCP stdio hops, ChromaDB, Groq model routing, money flow |
+| **Tuesday's Unedited Seam List** | [`week12/seam_list.md`](week12/seam_list.md) | 10 integration seams marked fixed / accepted / ran-out-of-time |
+| **Integrated Evaluation Suite** | [`week12/eval_suite_w12.py`](week12/eval_suite_w12.py) | 35 cases, assertions before judges, **87.1% judge agreement** |
+| **Re-Scored Error Taxonomy** | [`week12/taxonomy_w12.md`](week12/taxonomy_w12.md) | 6 modes; integration mode: `wrong_endorsement_version` (15%) |
+| **Trajectory Evaluation & Gap** | [`week12/trajectory_w12.py`](week12/trajectory_w12.py) | **80.0% tool-choice accuracy**, **+20.0% outcome gap** |
+| **Wednesday's Known Weaknesses** | [`week12/weaknesses.md`](week12/weaknesses.md) | Top 3 weaknesses written unprompted before Thursday peer review |
+| **Cost & 10× Catastrophe Plan** | [`week12/cost_tenx.md`](week12/cost_tenx.md) | **$0.00048/claim**; 18,000 FNOL hailstorm week breaks Groq RPM first |
+| **10-Minute Demo Script** | [`week12/demo_script.md`](week12/demo_script.md) | Four-part standard timed script (0:00–10:00) |
+| **Integrated Agent & Tracing** | [`src/w12_agent.py`](src/w12_agent.py) | Per-span traces with intact trace_id surviving agent and MCP hops |
+| **Policy In-Force & Date Filter** | [`src/policy_data.py`](src/policy_data.py) | Code-enforced date filter resolving 2023 vs 2025 flood exclusion |
+
+---
+
+## 🎯 The Compliance & Regulatory Core
+
+1. **Never Decides Coverage:** The assistant strictly surfaces facts, policy wording, and citations. Final verdict tool is `refer_to_adjuster`. The system never states "claim is covered" or "claim is denied".
+2. **Date-In-Force Resolution (The Live Wound):** An August 2024 or December 31, 2024 loss is assessed strictly against the **2023 endorsement wording** (`FL-3`, threshold-based), *never* the 2025 wording (`FL-3A`), even though the 2025 document ranks higher in vector search similarity.
+3. **Three Distinct Numbers:** Deductible, sub-limit, and policy limit are kept as three separate schema fields.
+4. **Zero-PII MCP Line:** Claimant names, street addresses, and bodily injury descriptions are stripped via `redact()` before logging to `traces.jsonl` or passing over MCP pipes to peer squads.
+
+---
+
+## 📊 A Number That Moved
+
+- **Wrong Endorsement Version Citation Rate on Flood Boundary Cases ($n=5$):**
+  - **Before Date Filter:** **60.0%** (3/5 straddle cases cited 2025 wording for a 2024 loss)
+  - **After Code Date Filter:** **0.0%** (0/5 straddle cases cited wrong wording; 5/5 green)
+- **Judge Agreement Rate on Integrated Outputs:** **87.1%** (exceeds the 85% requirement)
+- **Stated Non-Coverage:** The test suite does *not* cover multi-policy concurrent causation conflicts where two separate policies apply simultaneously across endorsement rollover dates.
 
 ---
 

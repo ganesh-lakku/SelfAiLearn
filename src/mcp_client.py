@@ -28,6 +28,9 @@ class MCPClient:
         self.name = name
         self._next_id = 1
         env = os.environ.copy()
+        # Resolve python command to current interpreter to ensure virtualenv dependencies match
+        if command in ("python", "python3"):
+            command = sys.executable
         # Launch server subprocess
         self._proc = subprocess.Popen(
             [command] + args,

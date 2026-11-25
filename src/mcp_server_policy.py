@@ -16,7 +16,12 @@ import json
 
 # ── Ensure src/ is on path ────────────────────────────────────────────────────
 sys.path.insert(0, os.path.dirname(__file__))
-from tools import search_policy_exclusions as _search, compute_payout as _compute
+from tools import (
+    search_policy_exclusions as _search,
+    compute_payout as _compute,
+    check_coverage_in_force as _check_coverage,
+    refer_to_adjuster as _refer,
+)
 
 SERVER_INFO = {
     "name": "policy-search",
@@ -89,6 +94,72 @@ TOOLS = [
             "required": ["claimed_amount", "excess_amount", "status"],
         },
     },
+    # ── Week 12 additions ─────────────────────────────────────────────────────
+    {
+        "name": "check_coverage_in_force",
+        "description": (
+            "Call this tool to verify which endorsement set was in force on the loss date "
+            "BEFORE retrieving any exclusion wording. The endorsement version returned "
+            "determines which wording to apply. NEVER apply current/latest wording without "
+            "verifying the loss date first. Returns deductible, flood_sublimit, and "
+            "policy_limit as three DISTINCT fields — never conflate them."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "policy_number": {
+                    "type": "string",
+                    "description": "The policy number, e.g. 'POL-HO-772101'.",
+                },
+                "loss_date": {
+                    "type": "string",
+                    "description": "Date of loss in ISO-8601 format YYYY-MM-DD, e.g. '2024-08-15'.",
+                },
+            },
+            "required": ["policy_number", "loss_date"],
+        },
+    },
+    {
+        "name": "refer_to_adjuster",
+        "description": (
+            "ALWAYS use this as the final step. This system does NOT make coverage decisions "
+            "— it only surfaces facts and refers to a human adjuster. Never emit the word "
+            "'covered' or 'denied' as a final verdict. Always refer. "
+            "Supply the claim_id, the reason for referral, all clause citations "
+            "(format: [CLAUSE clause_id | ENDORSEMENT endorsement_set | LOSS DATE loss_date]), "
+            "the endorsement_version applied, and the loss_date."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "claim_id": {
+                    "type": "string",
+                    "description": "The claim identifier being referred.",
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for referral to the human adjuster.",
+                },
+                "citations": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "List of policy clause citations. "
+                        "Format: '[CLAUSE clause_id | ENDORSEMENT endorsement_set | LOSS DATE loss_date]'."
+                    ),
+                },
+                "endorsement_version": {
+                    "type": "string",
+                    "description": "The endorsement set version applied, e.g. '2023' or '2025'.",
+                },
+                "loss_date": {
+                    "type": "string",
+                    "description": "Date of loss in ISO-8601 format YYYY-MM-DD.",
+                },
+            },
+            "required": ["claim_id", "reason", "citations", "endorsement_version", "loss_date"],
+        },
+    },
 ]
 
 
@@ -138,6 +209,7 @@ def handle_call(name: str, args: dict) -> dict:
         result = _search(
             policy_form=args.get("policy_form", ""),
             query=args.get("query", ""),
+            endorsement_version=args.get("endorsement_version"),
         )
         return {"content": [{"type": "text", "text": json.dumps(result)}]}
 
@@ -146,6 +218,23 @@ def handle_call(name: str, args: dict) -> dict:
             claimed_amount=args.get("claimed_amount", 0.0),
             excess_amount=args.get("excess_amount", 0.0),
             status=args.get("status", "DENIED"),
+        )
+        return {"content": [{"type": "text", "text": json.dumps(result)}]}
+
+    elif name == "check_coverage_in_force":
+        result = _check_coverage(
+            policy_number=args.get("policy_number", ""),
+            loss_date=args.get("loss_date", ""),
+        )
+        return {"content": [{"type": "text", "text": json.dumps(result)}]}
+
+    elif name == "refer_to_adjuster":
+        result = _refer(
+            claim_id=args.get("claim_id", ""),
+            reason=args.get("reason", ""),
+            citations=args.get("citations", []),
+            endorsement_version=args.get("endorsement_version", ""),
+            loss_date=args.get("loss_date", ""),
         )
         return {"content": [{"type": "text", "text": json.dumps(result)}]}
 

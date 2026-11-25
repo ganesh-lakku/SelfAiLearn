@@ -17,6 +17,11 @@ import json
 
 sys.path.insert(0, os.path.dirname(__file__))
 from claims_data import CLAIMS_DATABASE
+from tracer import redact
+try:
+    from policy_data import FLOOD_STRADDLE_CLAIMS
+except ImportError:
+    FLOOD_STRADDLE_CLAIMS = {}
 
 SERVER_INFO = {
     "name": "claims-system",
@@ -111,16 +116,18 @@ def make_error(req_id, code, message):
 
 def _lookup_claim(claim_id: str) -> dict:
     cid = claim_id.strip()
-    if cid not in CLAIMS_DATABASE:
-        return {
-            "success": False,
-            "error": (
-                f"Claim {cid} not found. "
-                f"Claim numbers look like CLM-YYYY-nnnnn (e.g. CLM-2024-10001). "
-                f"Check the number and retry, or ask the caller to verify the claim ID."
-            ),
-        }
-    return CLAIMS_DATABASE[cid]
+    if cid in CLAIMS_DATABASE:
+        return CLAIMS_DATABASE[cid]
+    if cid in FLOOD_STRADDLE_CLAIMS:
+        return FLOOD_STRADDLE_CLAIMS[cid]
+    return {
+        "success": False,
+        "error": (
+            f"Claim {cid} not found. "
+            f"Claim numbers look like CLM-YYYY-nnnnn (e.g. CLM-2024-10001). "
+            f"Check the number and retry, or ask the caller to verify the claim ID."
+        ),
+    }
 
 
 def handle_call(name: str, args: dict) -> dict:
@@ -138,11 +145,11 @@ def handle_call(name: str, args: dict) -> dict:
                 "claim_id": record["claim_id"],
                 "policy_number": record["policy_number"],
                 "form_number": record["form_number"],
-                "edition_date": record["edition_date"],
+                "edition_date": record.get("edition_date", ""),
                 "date_of_loss": record["date_of_loss"],
                 "claimed_amount": record["claimed_amount"],
-                "excess_amount": record["excess_amount"],
-                "adjuster_notes": record["adjuster_notes"],
+                "excess_amount": record.get("excess_amount", 0.0),
+                "adjuster_notes": redact(record["adjuster_notes"]),  # PII REDACTED BEFORE MCP EXPOSURE
             })}],
         }
 
@@ -158,7 +165,7 @@ def handle_call(name: str, args: dict) -> dict:
             "content": [{"type": "text", "text": json.dumps({
                 "success": True,
                 "claim_id": record["claim_id"],
-                "adjuster_notes": record["adjuster_notes"],
+                "adjuster_notes": redact(record["adjuster_notes"]),  # PII REDACTED BEFORE MCP EXPOSURE
             })}],
         }
 

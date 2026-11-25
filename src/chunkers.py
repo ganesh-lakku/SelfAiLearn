@@ -13,7 +13,15 @@ import tiktoken
 # Shared token helper
 # ---------------------------------------------------------------------------
 
-_ENC = tiktoken.get_encoding("cl100k_base")
+try:
+    _ENC = tiktoken.get_encoding("cl100k_base")
+except Exception:
+    class _FallbackEnc:
+        def encode(self, text: str):
+            return text.split()
+        def decode(self, tokens):
+            return " ".join(tokens)
+    _ENC = _FallbackEnc()
 
 
 def _token_len(text: str) -> int:
